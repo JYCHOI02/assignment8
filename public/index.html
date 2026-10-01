@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>최민수 | Portfolio PR</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --card-bg: rgba(18, 24, 38, 0.7);
+            --primary: #6366f1;
+            --secondary: #06b6d4;
+            --accent: #f43f5e;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        .dynamic-container {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* --- TOP PROFILE HEADER --- */
+        .profile-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px 42px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        /* 작성 목적 박스 */
+        .purpose-banner {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .purpose-banner strong {
+            color: var(--secondary);
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .user-tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            background: rgba(6, 182, 212, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .profile-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .profile-title span {
+            background: linear-gradient(135deg, #fff 30%, var(--text-sub));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .toggle-btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-btn:hover, .toggle-btn:focus-visible {
+            border-color: var(--secondary);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        /* --- ACCORDION DETAILED PROFILE --- */
+        .profile-sub-info {
+            display: none;
+            margin-top: 28px;
+            padding-top: 28px;
+            border-top: 1px dashed var(--border);
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .profile-sub-info.show {
+            display: grid;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 16px 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .info-box .lbl {
+            font-size: 12px;
+            color: var(--text-sub);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .info-box .val {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* --- DYNAMIC PR SECTION --- */
+        .pr-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 28px;
+        }
+
+        .selector-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .selector-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 26px 28px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .selector-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(6px);
+        }
+
+        .selector-card:focus-visible {
+            border-color: var(--secondary);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+            transform: translateX(6px);
+        }
+
+        .selector-card.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(6, 182, 212, 0.08));
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25);
+        }
+
+        .selector-card.active::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 20%; height: 60%; width: 5px;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 12px var(--primary);
+        }
+
+        .card-num {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .card-heading {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .timeline-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            position: relative;
+        }
+
+        .timeline-panel::before {
+            content: '';
+            position: absolute;
+            top: 55px;
+            bottom: 55px;
+            left: 68px;
+            width: 2px;
+            background: linear-gradient(180deg, #f59e0b, #3b82f6, #10b981);
+            opacity: 0.3;
+        }
+
+        .timeline-node {
+            display: flex;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .node-tag {
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            height: fit-content;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border: 1px solid transparent;
+        }
+
+        .node-s .node-tag { 
+            background: rgba(245, 158, 11, 0.15); 
+            color: #fbbf24; 
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        .node-a .node-tag { 
+            background: rgba(59, 130, 246, 0.15); 
+            color: #60a5fa; 
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        .node-r .node-tag { 
+            background: rgba(16, 185, 129, 0.15); 
+            color: #34d399; 
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .node-content {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 18px 24px;
+            border-radius: 14px;
+            flex-grow: 1;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-sub);
+        }
+
+        .node-content strong {
+            color: var(--text-main);
+            margin-right: 8px;
+        }
+
+        .evidence-section {
+            margin-top: 12px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .evidence-btn {
+            background: rgba(6, 182, 212, 0.08);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: var(--secondary);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: fit-content;
+            transition: all 0.2s ease;
+        }
+
+        .evidence-btn:hover, .evidence-btn:focus-visible {
+            background: rgba(6, 182, 212, 0.2);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        /* --- MODAL (중앙 팝업 창) STYLES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 8px;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--accent);
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .evidence-img {
+            width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(15, 23, 42, 0.6);
+        }
+
+        .evidence-caption {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-top: 16px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1024px) {
+            .pr-layout {
+                grid-template-columns: 1fr;
+            }
+            .timeline-panel::before {
+                display: none;
+            }
+            .timeline-node {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* ========================================================= */
+        /* --- PRIVATE DASHBOARD (비공개 영역) STYLES --- */
+        /* ========================================================= */
+        .private-dashboard-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            border-radius: 24px;
+            padding: 36px 42px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(245, 158, 11, 0.08);
+            margin-top: 10px;
+        }
+
+        .private-dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #ec4899, #8b5cf6);
+        }
+
+        .private-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .private-tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #fbbf24;
+            background: rgba(245, 158, 11, 0.12);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .private-title {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .private-title span {
+            background: linear-gradient(135deg, #fbbf24 30%, #f43f5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .auth-status-badge.locked {
+            background: rgba(244, 63, 94, 0.12);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .auth-status-badge.unlocked {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: currentColor;
+            display: inline-block;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .private-notice-banner {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px dashed rgba(245, 158, 11, 0.3);
+            border-radius: 14px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .private-notice-banner strong {
+            color: #fbbf24;
+        }
+
+        /* Locked View Styles */
+        .locked-container {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 40px 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .lock-icon-huge {
+            font-size: 48px;
+            filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.4));
+        }
+
+        .lock-heading {
+            font-size: 20px;
+            font-weight: 800;
+            color: #f8fafc;
+        }
+
+        .lock-description {
+            font-size: 14px;
+            color: var(--text-sub);
+            max-width: 650px;
+            line-height: 1.6;
+        }
+
+        .lock-code-box {
+            font-family: Consolas, monospace;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 12px;
+            color: #f43f5e;
+        }
+
+        .locked-skeletons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .skeleton-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            opacity: 0.7;
+        }
+
+        .skeleton-tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-sub);
+        }
+
+        .skeleton-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .skeleton-line {
+            width: 100%;
+            height: 10px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Private Actions */
+        .private-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .btn-unlock {
+            background: linear-gradient(135deg, #f59e0b, #ec4899);
+            border: none;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-unlock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(245, 158, 11, 0.45);
+        }
+
+        .btn-login-passkey {
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            border: none;
+            color: #fff;
+            padding: 14px 34px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-login-passkey:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.55);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            color: #fff;
+            padding: 12px 26px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .passkey-input-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .passkey-input-box input {
+            background: transparent;
+            border: none;
+            color: #f8fafc;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+        }
+
+        .passkey-cancel-alert {
+            display: none;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #fbbf24;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            max-width: 600px;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .passkey-meta-badge {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 12px;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .passkey-meta-badge code {
+            font-family: Consolas, monospace;
+            color: #38bdf8;
+            word-break: break-all;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .btn-logout {
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-logout:hover {
+            background: rgba(244, 63, 94, 0.25);
+            transform: translateY(-1px);
+        }
+
+        /* Unlocked View Styles */
+        .unlocked-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .unlocked-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #34d399;
+        }
+
+        .private-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .private-item-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .private-item-card:hover {
+            border-color: rgba(245, 158, 11, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .item-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .item-card-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .item-card-icon {
+            font-size: 24px;
+        }
+
+        .item-card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .item-card-summary {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--secondary);
+            line-height: 1.5;
+            background: rgba(6, 182, 212, 0.05);
+            padding: 10px 14px;
+            border-radius: 10px;
+            border-left: 3px solid var(--secondary);
+        }
+
+        .item-card-bullets {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-sub);
+            line-height: 1.6;
+        }
+
+        .item-card-bullets li {
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .item-card-bullets li::before {
+            content: '•';
+            position: absolute;
+            left: 2px;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dynamic-container">
+        <!-- HEADER PROFILE -->
+        <header class="profile-card">
+            <!-- 작성 목적 명시 영역 -->
+            <div class="purpose-banner">
+                📌 이 페이지는 <strong>방문자</strong>에게 <strong>역량 및 기본 프로필</strong>을 보여주기 위한 포트폴리오입니다.
+            </div>
+
+            <div class="profile-header">
+                <div>
+                    <span class="user-tag">CORE COMPETENCY</span>
+                    <h1 class="profile-title"><span>최민수</span> | 논리적 사고와 데이터 근거로 성과를 만드는 인재</h1>
+                </div>
+                <button id="toggleBtn" class="toggle-btn" onclick="toggleInfo()">상세 정보 보기 ▾</button>
+            </div>
+
+            <div id="subInfo" class="profile-sub-info">
+                <div class="info-box"><span class="lbl">성명 / 성별</span><span class="val">최민수 (남성)</span></div>
+                <div class="info-box"><span class="lbl">생년월일</span><span class="val">****년 **월 **일</span></div>
+                <div class="info-box"><span class="lbl">전화번호</span><span class="val">010-****-****</span></div>
+                <div class="info-box"><span class="lbl">이메일</span><span class="val">mschoi6804@naver.com</span></div>
+                <div class="info-box"><span class="lbl">전공</span><span class="val">빅데이터사이언스학부</span></div>
+                <div class="info-box"><span class="lbl">학력</span><span class="val">**대학교 재학/졸업예정</span></div>
+                <div class="info-box"><span class="lbl">자격증</span><span class="val">ADsP (데이터분석 준전문가)</span></div>
+                <div class="info-box"><span class="lbl">주요 경험</span><span class="val">학부 분석 프로젝트</span></div>
+            </div>
+        </header>
+
+        <!-- MAIN PR FLOW -->
+        <main class="pr-layout">
+            <!-- SELECTORS -->
+            <div class="selector-group">
+                <div class="selector-card active" tabindex="0" onclick="showContent(0, this)" onkeydown="handleKeyDown(event, 0, this)" role="button" aria-pressed="true">
+                    <div class="card-num">KEY STRENGTH 01</div>
+                    <div class="card-heading">데이터 기반의 문제 해결력</div>
+                </div>
+
+                <div class="selector-card" tabindex="0" onclick="showContent(1, this)" onkeydown="handleKeyDown(event, 1, this)" role="button" aria-pressed="false">
+                    <div class="card-num">KEY STRENGTH 02</div>
+                    <div class="card-heading">이성적 판단 & 객관적 설득력</div>
+                </div>
+
+                <div class="selector-card" tabindex="0" onclick="showContent(2, this)" onkeydown="handleKeyDown(event, 2, this)" role="button" aria-pressed="false">
+                    <div class="card-num">KEY STRENGTH 03</div>
+                    <div class="card-heading">유연한 경청 & 문제 조율력</div>
+                </div>
+            </div>
+
+            <!-- TIMELINE DISPLAY -->
+            <div class="timeline-panel" id="timelineDisplay">
+                <div class="timeline-node node-s">
+                    <div class="node-tag">상황</div>
+                    <div class="node-content" id="textS">
+                        <strong>불확실성 상존:</strong> 임의로 만들어진 가상의 데이터 분석 중 상식적으로 생각했을때 적절하지 않은 결과가 나옴.
+                    </div>
+                </div>
+
+                <div class="timeline-node node-a">
+                    <div class="node-tag">행동</div>
+                    <div class="node-content" id="textA">
+                        <strong>데이터 리터러시:</strong> 끝까지 데이터를 기반으로 분석을 진행하여 프로젝트를 진행함.
+                    </div>
+                </div>
+
+                <div class="timeline-node node-r">
+                    <div class="node-tag">결과</div>
+                    <div class="node-content" id="textR">
+                        <strong>명확한 방향 제시:</strong> 제시된 데이터를 기반으로 유의미한 인사이트를 얻음.
+                    </div>
+                </div>
+
+                <!-- EVIDENCE INTERACTION SECTION -->
+                <div id="evidenceSection" class="evidence-section">
+                    <button class="evidence-btn" onclick="openModal()">
+                        🔍 자세히 보기
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- PRIVATE DASHBOARD (비공개 시크릿 영역) -->
+        <section class="private-dashboard-card" id="privateDashboard">
+            <div class="private-header">
+                <div>
+                    <span class="private-tag">SECURITY ZONE: CONFIDENTIAL</span>
+                    <h2 class="private-title"><span>비공개 시크릿 대시보드</span> | 나만의 개인 영역</h2>
+                </div>
+                <div id="authStatusBadge" class="auth-status-badge locked">
+                    <span class="status-dot"></span>
+                    <span id="authStatusText">상태: 401 비인가 (Locked)</span>
+                </div>
+            </div>
+
+            <div class="private-notice-banner">
+                🛡️ <strong>보안 아키텍처 안내:</strong> 본 영역은 비밀번호 없이 오직 <strong>WebAuthn 패스키(Windows Hello PIN / 지문)</strong> 인증을 통과해야만 서버(<code>GET /api/private-data</code>)에서 실시간으로 인가되어 데이터가 전송됩니다. 인증되지 않은 상태의 초기 정적 소스(HTML/JS 번들)에는 <strong>비공개 텍스트가 일절 포함되지 않습니다.</strong>
+            </div>
+
+            <!-- 동적 인가 렌더링 컨테이너 -->
+            <div id="privateContentContainer">
+                <!-- JS가 인가 상태에 따라 잠금 UI 또는 복호화된 비공개 카드 3종을 동적으로 삽입합니다 -->
+            </div>
+        </section>
+    </div>
+
+    <!-- CENTRAL MODAL POPUP -->
+    <div id="evidenceModal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">📌 세부 검증 자료</span>
+                <button class="close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <img id="evidenceImg" class="evidence-img" src="" alt="증거 자료 이미지">
+                <p id="evidenceCaption" class="evidence-caption"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleInfo() {
+            const subInfo = document.getElementById('subInfo');
+            const btn = document.getElementById('toggleBtn');
+            const isShow = subInfo.classList.toggle('show');
+            btn.textContent = isShow ? '상세 정보 닫기 ▴' : '상세 정보 보기 ▾';
+        }
+
+        const data = [
+            {
+                s: "<strong>불확실성 상존:</strong> 임의로 만들어진 가상의 데이터 분석 중 상식적으로 생각했을때 적절하지 않은 결과가 나옴.",
+                a: "<strong>데이터 리터러시:</strong> 끝까지 데이터를 기반으로 분석을 진행하여 프로젝트를 진행함.",
+                r: "<strong>명확한 방향 제시:</strong> 제시된 데이터를 기반으로 유의미한 인사이트를 얻음.",
+                hasEvidence: true,
+                imgSrc: "images/E-commerce.png",
+                imgCaption: "📌 [검증 자료] 비정상적인 수치 패턴 속에서도 선입견 없이 순수 데이터만을 다각도로 분석하여 객관적 실체와 유의미한 시사점을 도출해낸 결과 흐름"
+            },
+            {
+                s: "<strong>주안점 혼선:</strong> 진행 방향성에 대한 팀원 간 의견 대립으로 프로젝트 과제 진행이 중단된 상황.",
+                a: "<strong>근거 기반 정리:</strong> 주관적 주장을 배제하고 객관적 근거와 현실적 난이도를 기회비용 표로 재정리해 대안 제시.",
+                r: "<strong>합의 및 완수:</strong> 논리적 타당성으로 만장일치 합의 도출 후 기한 내 프로젝트 성공적 마무리.",
+                hasEvidence: false
+            },
+            {
+                s: "<strong>요구사항 변경:</strong> 외부 조건 변화로 기존 목표 및 프로세스를 전면 수정해야 했던 상황.",
+                a: "<strong>유연한 피벗:</strong> 피드백을 즉시 수용하고 변경된 요구사항에 맞춘 계획으로 신속히 전환.",
+                r: "<strong>리스크 최소화:</strong> 환경 변화에 빠르게 적응하여 차질 없이 최종 산출물 완성.",
+                hasEvidence: false
+            }
+        ];
+
+        function showContent(index, element) {
+            document.querySelectorAll('.selector-card').forEach(card => {
+                card.classList.remove('active');
+                card.setAttribute('aria-pressed', 'false');
+            });
+            element.classList.add('active');
+            element.setAttribute('aria-pressed', 'true');
+
+            const display = document.getElementById('timelineDisplay');
+            
+            document.getElementById('textS').innerHTML = data[index].s;
+            document.getElementById('textA').innerHTML = data[index].a;
+            document.getElementById('textR').innerHTML = data[index].r;
+
+            const evidenceSection = document.getElementById('evidenceSection');
+            if (data[index].hasEvidence) {
+                evidenceSection.style.display = 'flex';
+                document.getElementById('evidenceImg').src = data[index].imgSrc;
+                document.getElementById('evidenceCaption').textContent = data[index].imgCaption;
+            } else {
+                evidenceSection.style.display = 'none';
+            }
+
+            const nodes = display.querySelectorAll('.timeline-node');
+            nodes.forEach(node => {
+                node.style.animation = 'none';
+                node.offsetHeight;
+                node.style.animation = 'slideIn 0.3s ease-out';
+            });
+        }
+
+        /* --- MODAL CONTROLS --- */
+        function openModal() {
+            document.getElementById('evidenceModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('evidenceModal').classList.remove('show');
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                closeModal();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        function handleKeyDown(event, index, element) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                showContent(index, element);
+            }
+        }
+
+        /* --- WEBAUTHN BINARY CONVERTERS --- */
+        function bufferToBase64url(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        function base64urlToBuffer(base64url) {
+            let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+            while (base64.length % 4) {
+                base64 += '=';
+            }
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        /* --- PRIVATE DASHBOARD DYNAMIC LOADER --- */
+        let currentAuthStatus = { authenticated: false, activePasskeyName: null, registeredPasskeysCount: 0 };
+
+        async function loadPrivateDashboard() {
+            const container = document.getElementById('privateContentContainer');
+            const badge = document.getElementById('authStatusBadge');
+            const statusText = document.getElementById('authStatusText');
+
+            try {
+                // 인증 상태 확인
+                const statusRes = await fetch('/api/auth/status');
+                if (statusRes.ok) {
+                    currentAuthStatus = await statusRes.json();
+                }
+
+                const response = await fetch('/api/private-data');
+
+                if (response.status === 401 || response.status === 403) {
+                    // 미인증 상태 (401 Unauthorized): 비공개 데이터 일절 노출 없이 잠금 UI 렌더링
+                    badge.className = 'auth-status-badge locked';
+                    statusText.textContent = '상태: 401 비인가 (Locked)';
+                    renderLockedView(container);
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`서버 응답 오류 (HTTP ${response.status})`);
+                }
+
+                const result = await response.json();
+                if (result.success && result.data) {
+                    // 인가 성공: 서버에서 내려받은 비공개 항목 동적 렌더링
+                    badge.className = 'auth-status-badge unlocked';
+                    statusText.textContent = '상태: 200 인가 완료 (Authorized)';
+                    renderUnlockedView(container, result.data);
+                }
+            } catch (err) {
+                badge.className = 'auth-status-badge locked';
+                statusText.textContent = '상태: 접근 차단 (Locked)';
+                renderLockedView(container);
+            }
+        }
+
+        function renderLockedView(container) {
+            container.innerHTML = `
+                <div class="locked-container">
+                    <div class="lock-icon-huge">🔐</div>
+                    <h3 class="lock-heading">패스키 인증이 필요한 비공개 영역입니다</h3>
+                    <p class="lock-description">
+                        서버(<code>GET /api/private-data</code>) 요청 결과 <strong>401 Unauthorized</strong> 상태가 확인되었습니다.<br>
+                        비밀번호 없이 오직 <strong>WebAuthn 패스키(Windows Hello PIN / 지문)</strong>로만 접근할 수 있습니다.
+                    </p>
+                    <div class="lock-code-box">HTTP/1.1 401 Unauthorized | Access-Control: Strictly Protected</div>
+
+                    <div id="passkeyNoticeBox" class="passkey-cancel-alert"></div>
+
+                    <div class="locked-skeletons">
+                        <div class="skeleton-card">
+                            <span class="skeleton-tag">PROTECTED ITEM 01</span>
+                            <div class="skeleton-title">🔒 [비공개 항목 1] 인가 필요</div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line" style="width: 70%;"></div>
+                        </div>
+                        <div class="skeleton-card">
+                            <span class="skeleton-tag">PROTECTED ITEM 02</span>
+                            <div class="skeleton-title">🔒 [비공개 항목 2] 인가 필요</div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line" style="width: 80%;"></div>
+                        </div>
+                        <div class="skeleton-card">
+                            <span class="skeleton-tag">PROTECTED ITEM 03</span>
+                            <div class="skeleton-title">🔒 [비공개 항목 3] 인가 필요</div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line" style="width: 60%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- 패스키 로그인 및 등록 컨트롤 영역 -->
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; margin-top: 14px;">
+                        <!-- 1순위 대표 버튼: 등록된 패스키로 로그인 -->
+                        <button class="btn-login-passkey" id="btnLoginPasskey" onclick="handleLoginPasskey()">
+                            🔐 등록된 패스키로 로그인 (Windows Hello PIN / 지문)
+                        </button>
+
+                        <div style="display: flex; align-items: center; gap: 10px; width: 100%; max-width: 440px; color: var(--text-sub); font-size: 12px; margin: 2px 0;">
+                            <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                            <span>또는 새 기기 패스키 등록</span>
+                            <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                        </div>
+
+                        <div class="passkey-input-box">
+                            <span style="font-size: 16px;">🏷️</span>
+                            <input type="text" id="passkeyNameInput" placeholder="패스키 별칭 입력 (예: 내 윈도우 PC / 아이폰 FaceID)" value="내 윈도우 PC (Windows Hello)">
+                        </div>
+
+                        <div class="private-actions">
+                            <button class="btn-register" id="btnRegisterPasskey" onclick="handleRegisterPasskey()">
+                                ✨ 이 기기로 새 패스키 등록
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function renderUnlockedView(container, data) {
+            const passkeyName = currentAuthStatus.activePasskeyName || '기기 등록 패스키';
+
+            // 서버에서 등록된 패스키 목록 조회
+            let passkeys = [];
+            try {
+                const pkRes = await fetch('/api/auth/passkeys');
+                if (pkRes.ok) {
+                    const pkData = await pkRes.json();
+                    passkeys = pkData.passkeys || [];
+                }
+            } catch (e) {
+                console.warn('패스키 목록 로드 실패:', e);
+            }
+
+            // 패스키 목록 HTML 카드 생성
+            const passkeysHtml = passkeys.length > 0 ? passkeys.map((pk, idx) => `
+                <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <span style="font-weight: 800; font-size: 15px; color: #f8fafc; display: flex; align-items: center; gap: 6px;">
+                            🔑 [패스키 #${idx + 1}] ${pk.name}
+                        </span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 11px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 10px; border-radius: 12px; font-weight: 700;">
+                                🟢 정상 보관됨 (서명 검증용)
+                            </span>
+                            <button onclick="handleDeletePasskey('${pk.id}')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 8px; padding: 3px 8px; font-size: 11px; cursor: pointer; font-weight: 600;">
+                                🗑️ 삭제
+                            </button>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-sub); display: flex; flex-direction: column; gap: 4px;">
+                        <div>📍 <strong>보관 위치(Authenticator):</strong> ${pk.authenticatorType || '기기 자체 보안 영역 (Windows Hello / TPM)'}</div>
+                        <div>📅 <strong>등록 일시:</strong> ${new Date(pk.registeredAt).toLocaleString('ko-KR')}</div>
+                        <div>🛡️ <strong>저장된 데이터:</strong> <span style="color: #38bdf8; font-weight: 700;">${pk.publicKeyType || 'ECC P-256 Public Key'} (비밀번호 아님)</span></div>
+                    </div>
+                    <details style="margin-top: 6px; font-size: 11px;">
+                        <summary style="cursor: pointer; color: #818cf8; font-weight: 600;">🔍 서버에 저장된 공개키(Public Key) 전문 보기</summary>
+                        <pre style="margin-top: 6px; background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px; color: #cbd5e1; font-family: Consolas, monospace; overflow-x: auto; white-space: pre-wrap; font-size: 11px;">${pk.publicKey}</pre>
+                    </details>
+                </div>
+            `).join('') : `
+                <div style="font-size: 13px; color: var(--text-sub); padding: 10px; text-align: center;">
+                    등록된 패스키가 없습니다.
+                </div>
+            `;
+
+            const itemsHtml = data.items.map(item => `
+                <div class="private-item-card">
+                    <div class="item-card-header">
+                        <span class="item-card-badge">${item.badge}</span>
+                        <span class="item-card-icon">${item.icon}</span>
+                    </div>
+                    <h4 class="item-card-title">${item.title}</h4>
+                    <div class="item-card-summary">${item.summary}</div>
+                    <ul class="item-card-bullets">
+                        ${item.content.map(point => `<li>${point}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="unlocked-container">
+                    <div class="unlocked-banner">
+                        <div>
+                            🟢 <strong>패스키 보안 세션 인가 성공</strong> | 열람 권한자: <strong>${data.owner}</strong> (${data.classifiedLevel})
+                        </div>
+                        <button class="btn-logout" onclick="handleLogout()">
+                            🔒 세션 잠금 (로그아웃)
+                        </button>
+                    </div>
+
+                    <!-- 등록된 패스키 목록 화면 -->
+                    <div style="background: rgba(18, 24, 38, 0.85); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 18px; padding: 22px 26px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 20px;">🔑</span>
+                                <h3 style="font-size: 17px; font-weight: 800; color: #f8fafc; letter-spacing: -0.3px;">
+                                    서버에 등록된 패스키 목록 (Passkey List)
+                                </h3>
+                            </div>
+                            <span style="font-size: 12px; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); padding: 4px 12px; border-radius: 20px; font-weight: 700;">
+                                총 ${passkeys.length}개 보관 중
+                            </span>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            ${passkeysHtml}
+                        </div>
+                    </div>
+
+                    <!-- 비공개 데이터 3종 그리드 -->
+                    <div class="private-items-grid">
+                        ${itemsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --- WEBAUTHN REGISTRATION IMPLEMENTATION --- */
+        async function handleRegisterPasskey() {
+            const noticeBox = document.getElementById('passkeyNoticeBox');
+            if (noticeBox) {
+                noticeBox.style.display = 'none';
+                noticeBox.innerHTML = '';
+            }
+
+            // WebAuthn 브라우저 API 지원 검사
+            if (!window.PublicKeyCredential) {
+                alert('현재 브라우저 또는 환경에서 WebAuthn(패스키)을 지원하지 않습니다. 최신 Chrome 또는 Edge 브라우저를 권장합니다.');
+                return;
+            }
+
+            const nameInput = document.getElementById('passkeyNameInput');
+            const passkeyName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : '내 윈도우 PC (Windows Hello)';
+
+            try {
+                // 1단계: 서버에 등록용 질문(Challenge) 요청
+                const optionsRes = await fetch('/api/auth/register-options', { method: 'POST' });
+                if (!optionsRes.ok) {
+                    throw new Error('서버 챌린지 생성 요청 실패');
+                }
+                const creationOptions = await optionsRes.json();
+
+                // 2단계: 바이너리 변환 (Base64URL -> ArrayBuffer)
+                creationOptions.challenge = base64urlToBuffer(creationOptions.challenge);
+                creationOptions.user.id = base64urlToBuffer(creationOptions.user.id);
+
+                console.log('[WebAuthn 등록 시작] navigator.credentials.create 호출 중...');
+
+                // 3단계: 브라우저/인증기에 패스키 생성 요청 (기기 내부에서 키페어 생성)
+                const credential = await navigator.credentials.create({
+                    publicKey: creationOptions
+                });
+
+                if (!credential) {
+                    throw new Error('인증기 응답이 비어있습니다.');
+                }
+
+                // 4단계: 공개키 및 attestation 추출하여 서버로 전송 (개인키/비밀번호 미포함)
+                const credentialId = bufferToBase64url(credential.rawId);
+                const clientDataJSON = bufferToBase64url(credential.response.clientDataJSON);
+                const attestationObject = bufferToBase64url(credential.response.attestationObject);
+
+                const verifyPayload = {
+                    name: passkeyName, // 사람 인식용 패스키 별칭
+                    credentialId: credentialId,
+                    clientDataJSON: clientDataJSON,
+                    attestationObject: attestationObject,
+                    authenticatorType: '기기 자체 보안 영역 (Windows Hello / 플랫폼 인증기)',
+                    // ※ 주의: 어떠한 경우에도 privateKey나 password 필드는 포함되지 않음
+                };
+
+                const verifyRes = await fetch('/api/auth/register-verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(verifyPayload),
+                });
+
+                const verifyResult = await verifyRes.json();
+                if (verifyResult.success) {
+                    alert(`🎉 [${passkeyName}] 패스키 등록이 완료되었습니다!\n서버에 공개키가 안전하게 저장되었습니다.`);
+                    await loadPrivateDashboard();
+                } else {
+                    throw new Error(verifyResult.message || '패스키 등록 검증 실패');
+                }
+            } catch (err) {
+                console.warn('[WebAuthn 등록 중단/에러]:', err);
+
+                // 등록을 중간에 취소하면 화면에 안내가 나오고, 서버에 아무것도 저장되지 않는다.
+                if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
+                    // 서버에 취소 알림(세션 챌린지 정리)
+                    fetch('/api/auth/register-cancel', { method: 'POST' }).catch(() => {});
+
+                    if (noticeBox) {
+                        noticeBox.style.display = 'block';
+                        noticeBox.innerHTML = `
+                            ⚠️ <strong>패스키 등록이 취소되었습니다.</strong><br>
+                            사용자가 인증기 창을 닫았거나 취소하여 기기 밖으로 아무것도 전송되지 않았으며, 
+                            <strong>서버에도 어떠한 인증 정보나 키가 저장되지 않았습니다.</strong>
+                        `;
+                    }
+                } else {
+                    alert('패스키 등록 처리 중 오류 발생: ' + err.message);
+                }
+            }
+        }
+
+        /* --- WEBAUTHN LOGIN IMPLEMENTATION --- */
+        async function handleLoginPasskey() {
+            const noticeBox = document.getElementById('passkeyNoticeBox');
+            if (noticeBox) {
+                noticeBox.style.display = 'none';
+                noticeBox.innerHTML = '';
+            }
+
+            if (!window.PublicKeyCredential) {
+                alert('현재 브라우저에서 WebAuthn(패스키)을 지원하지 않습니다.');
+                return;
+            }
+
+            try {
+                // 1단계: 서버에 로그인 일회용 질문(Challenge) 및 등록된 패스키 ID 요청
+                const optionsRes = await fetch('/api/auth/login-options', { method: 'POST' });
+                const loginOptions = await optionsRes.json();
+
+                if (!optionsRes.ok || !loginOptions.challenge) {
+                    alert(loginOptions.message || '로그인 옵션 요청 실패: 먼저 패스키를 등록해주세요.');
+                    return;
+                }
+
+                // 2단계: 바이너리 변환 (Base64URL -> ArrayBuffer)
+                loginOptions.challenge = base64urlToBuffer(loginOptions.challenge);
+                if (loginOptions.allowCredentials && loginOptions.allowCredentials.length > 0) {
+                    loginOptions.allowCredentials = loginOptions.allowCredentials.map(cred => ({
+                        ...cred,
+                        id: base64urlToBuffer(cred.id)
+                    }));
+                }
+
+                console.log('[WebAuthn 로그인 시작] navigator.credentials.get 호출 중...');
+
+                // 3단계: 기기 생체인증 및 일회용 챌린지 전자 서명 생성
+                const assertion = await navigator.credentials.get({
+                    publicKey: loginOptions
+                });
+
+                if (!assertion) {
+                    throw new Error('인증기 응답이 비어있습니다.');
+                }
+
+                // 4단계: 서명 결과 패킷 구성 및 서버 전송 (비밀번호 없음!)
+                const verifyPayload = {
+                    credentialId: bufferToBase64url(assertion.rawId),
+                    clientDataJSON: bufferToBase64url(assertion.response.clientDataJSON),
+                    authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
+                    signature: bufferToBase64url(assertion.response.signature),
+                };
+
+                const verifyRes = await fetch('/api/auth/login-verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(verifyPayload),
+                });
+
+                const verifyResult = await verifyRes.json();
+                if (verifyResult.success) {
+                    alert(`🎉 [${verifyResult.user} 님] 패스키(Windows Hello PIN) 로그인 성공!`);
+                    await loadPrivateDashboard();
+                } else {
+                    throw new Error(verifyResult.message || '패스키 서명 검증 실패');
+                }
+            } catch (err) {
+                console.warn('[WebAuthn 로그인 중단/에러]:', err);
+                if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
+                    if (noticeBox) {
+                        noticeBox.style.display = 'block';
+                        noticeBox.innerHTML = `⚠️ <strong>패스키 로그인이 취소되었습니다.</strong> Windows Hello 인증(PIN / 지문)을 통과해야 잠금이 해제됩니다.`;
+                    }
+                } else {
+                    alert('패스키 로그인 오류: ' + err.message);
+                }
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                const res = await fetch('/api/auth/logout', { method: 'POST' });
+                const result = await res.json();
+                if (result.success) {
+                    await loadPrivateDashboard();
+                }
+            } catch (err) {
+                alert('로그아웃 실패: ' + err.message);
+            }
+        }
+
+        async function handleDeletePasskey(id) {
+            if (!confirm('이 패스키를 삭제하시겠습니까?')) return;
+            try {
+                const res = await fetch(`/api/auth/passkeys/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (result.success) {
+                    alert(result.message);
+                    await loadPrivateDashboard();
+                } else {
+                    alert('삭제 실패: ' + result.message);
+                }
+            } catch (e) {
+                alert('삭제 중 오류: ' + e.message);
+            }
+        }
+
+        window.onload = function() {
+            if (data[0].hasEvidence) {
+                document.getElementById('evidenceImg').src = data[0].imgSrc;
+                document.getElementById('evidenceCaption').textContent = data[0].imgCaption;
+            }
+            loadPrivateDashboard();
+        };
+    </script>
+</body>
+</html>
