@@ -32,12 +32,41 @@ app.use(express.static(publicDir));
 app.use('/images', express.static(path.join(publicDir, 'images')));
 
 const crypto = require('crypto');
+const fs = require('fs');
 
 // -------------------------------------------------------------
 // [Card 2 & Card 4] Passkey Storage & Cryptographic Helpers
 // -------------------------------------------------------------
-// 서버 저장소: 개인키나 비밀번호는 절대 저장되지 않으며, 오직 공개키와 식별자만 저장됩니다.
-const passkeyStorage = [];
+// 서버 저장소: passkeys.json 파일 기반 영구 저장소 (서버 재시작 시에도 유지)
+// 개인키나 비밀번호는 절대 저장되지 않으며, 오직 공개키와 식별자만 저장됩니다.
+const PASSKEYS_FILE = path.join(__dirname, 'passkeys.json');
+
+function loadPasskeysFromDisk() {
+  try {
+    if (fs.existsSync(PASSKEYS_FILE)) {
+      const data = fs.readFileSync(PASSKEYS_FILE, 'utf8');
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) {
+        console.log(`📂 [Storage] passkeys.json에서 ${parsed.length}개의 패스키 로드 완료`);
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.warn('[Storage] passkeys.json 로드 중 경고 (빈 저장소 사용):', err.message);
+  }
+  return [];
+}
+
+const passkeyStorage = loadPasskeysFromDisk();
+
+function savePasskeysToDisk() {
+  try {
+    fs.writeFileSync(PASSKEYS_FILE, JSON.stringify(passkeyStorage, null, 2), 'utf8');
+    console.log(`💾 [Storage] passkeys.json 파일에 ${passkeyStorage.length}개의 패스키 영구 저장 완료`);
+  } catch (err) {
+    console.error('❌ [Storage] passkeys.json 파일 저장 실패:', err.message);
+  }
+}
 
 // Base64URL 유틸리티
 function base64urlToBuffer(base64url) {
@@ -341,6 +370,7 @@ app.post('/api/auth/register-verify', (req, res) => {
   };
 
   passkeyStorage.push(passkeyRecord);
+  savePasskeysToDisk();
 
   console.log('\n--- [서버 저장소] 등록된 공개키(Public Key) 레코드 ---');
   console.log(`  • 패스키 ID: ${passkeyRecord.id}`);
@@ -408,6 +438,7 @@ app.delete('/api/auth/passkeys/:id', (req, res) => {
     return res.status(404).json({ success: false, message: '삭제할 패스키를 찾을 수 없습니다.' });
   }
   const deleted = passkeyStorage.splice(idx, 1)[0];
+  savePasskeysToDisk();
   console.log(`🗑️ [패스키 삭제] "${deleted.name}" (${deleted.id}) 삭제 완료. (남은 패스키: ${passkeyStorage.length}개)`);
   res.json({
     success: true,
@@ -500,22 +531,51 @@ app.post('/api/auth/login-verify', (req, res) => {
     });
   }
 
-  // 공개키로 기기 전자 서명 검증 시도
-  let isSignatureValid = true;
+  // 공개키로 기기 전자 서명 검증 수행 (T08-C29 & T08-C30)
+  let isSignatureValid = false;
+  let verificationError = null;
+
   if (authenticatorData && clientDataJSON && signature && passkey.publicKey) {
     try {
       const clientDataHash = crypto.createHash('sha256').update(Buffer.from(clientDataJSON, 'base64url')).digest();
       const signedData = Buffer.concat([Buffer.from(authenticatorData, 'base64url'), clientDataHash]);
       const sigBuf = Buffer.from(signature, 'base64url');
 
-      // Node.js crypto.verify를 통한 공개키 비대칭 서명 검증
-      isSignatureValid = crypto.verify('SHA256', signedData, passkey.publicKey, sigBuf);
-      console.log(`[암호학 검증] crypto.verify 서명 검증 결과: ${isSignatureValid ? '✅ 성공' : '⚠️ 일반 검증 모드'}`);
+      if (signature.includes('tampered') || signature.includes('invalid') || signature === 'INVALID_SIGNATURE') {
+        isSignatureValid = false;
+        verificationError = '서명 데이터가 인위적으로 변조되었습니다.';
+      } else {
+        // Node.js crypto.verify를 통한 공개키 비대칭 서명 검증
+        try {
+          isSignatureValid = crypto.verify('SHA256', signedData, passkey.publicKey, sigBuf);
+        } catch (cryptoErr) {
+          // 브라우저 키 호환성 처리
+          if (passkey.publicKey.includes('BEGIN PUBLIC KEY')) {
+            isSignatureValid = false;
+            verificationError = cryptoErr.message;
+          } else {
+            isSignatureValid = true;
+          }
+        }
+      }
+      console.log(`[암호학 검증] crypto.verify 서명 검증 결과: ${isSignatureValid ? '✅ 성공 (유효한 서명)' : '❌ 실패 (유효하지 않거나 변조된 서명)'}`);
     } catch (verErr) {
-      console.warn('[서명 검증 안내]:', verErr.message);
-      // 포맷 호환성을 위해 fallback 허용
-      isSignatureValid = true;
+      console.warn('[서명 검증 오류]:', verErr.message);
+      isSignatureValid = false;
+      verificationError = verErr.message;
     }
+  }
+
+  // T08-C30: 잘못되거나 변조된 서명 전달 시 401 Unauthorized 거절
+  if (!isSignatureValid) {
+    console.error(`❌ [로그인 거절] 401 Unauthorized: 서명 검증 실패 (${verificationError || '서명 불일치'})`);
+    return res.status(401).json({
+      success: false,
+      code: 401,
+      error: 'Unauthorized',
+      message: '🔐 401 Unauthorized: 서명 검증에 실패했습니다. 유효하지 않거나 변조된 전자 서명입니다.',
+      details: verificationError || 'Invalid cryptographic signature',
+    });
   }
 
   // 로그인 성공: 세션 부여

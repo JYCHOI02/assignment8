@@ -1,0 +1,14 @@
+[
+  {
+    "id": "oPOlMS_urHiMAtZi9P2YHg",
+    "credentialId": "oPOlMS_urHiMAtZi9P2YHg",
+    "name": "내 윈도우 PC (Windows Hello)",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIVggXyNX/eKSm0O9KdUYJ5YadwJa\nFkMxiLzG5RH3vRwgXyNX/eKSm0O9KdUYJ5YadwJaFkMxiLzG5RH3vRxkMA==\n-----END PUBLIC KEY-----",
+    "publicKeyRawBase64": "pQECAyYgASFYIF8jV_3ikptDvSnVGCeWGncCWhZDMYi8xuUR970cZDB6IlggVQhYv1T6mJsk83Ac60-HSS1S8kyfSuQzZae1JNWUFJg",
+    "publicKeyType": "ECC P-256 (ES256 ECDSA Public Key)",
+    "isPassword": false,
+    "authenticatorType": "기기 자체 보안 영역 (Windows Hello / 플랫폼 인증기)",
+    "registeredAt": "2026-10-02T00:49:47.455Z",
+    "signCount": 0
+  }
+]
