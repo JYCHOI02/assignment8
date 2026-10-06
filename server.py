@@ -8,6 +8,7 @@ import mimetypes
 from http import cookies
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+from datetime import datetime, timezone
 
 # Ensure UTF-8 output on Windows consoles
 if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
@@ -446,7 +447,7 @@ class PasskeyHandler(BaseHTTPRequestHandler):
                 'publicKeyType': 'ECC P-256 (ES256 ECDSA Public Key)',
                 'isPassword': False,
                 'authenticatorType': authenticator_type or '기기 자체 보안 영역 (Windows Hello / 플랫폼 인증기)',
-                'registeredAt': '2026-10-05T00:00:00.000Z',
+                'registeredAt': datetime.now(timezone.utc).isoformat(),
                 'signCount': 0
             }
 
@@ -487,7 +488,7 @@ class PasskeyHandler(BaseHTTPRequestHandler):
                     'publicKeyType': 'ECC P-256 (ES256 ECDSA Public Key)',
                     'isPassword': False,
                     'authenticatorType': '기기 자체 보안 영역 (Windows Hello / TPM)',
-                    'registeredAt': '2026-10-05T00:00:00.000Z',
+                    'registeredAt': datetime.now(timezone.utc).isoformat(),
                     'signCount': 0
                 }
             win_key['name'] = '주 기기: 내 윈도우 PC (Windows Hello)'
@@ -501,7 +502,7 @@ class PasskeyHandler(BaseHTTPRequestHandler):
                 'publicKeyType': 'ECC P-256 (ES256 ECDSA Public Key)',
                 'isPassword': False,
                 'authenticatorType': '모바일 플랫폼 인증기 (FaceID / iCloud 키체인)',
-                'registeredAt': '2026-10-05T00:00:00.000Z',
+                'registeredAt': datetime.now(timezone.utc).isoformat(),
                 'signCount': 0
             }
 
