@@ -1374,6 +1374,35 @@
             return bytes.buffer;
         }
 
+        /* --- SAFE API FETCH HELPER (백엔드 서버 미실행 감지 및 직관적 에러 안내) --- */
+        async function safeFetchJson(url, options = {}) {
+            let res;
+            try {
+                res = await fetch(url, options);
+            } catch (networkErr) {
+                throw new Error(`🚨 서버 연결 실패: 백엔드 서버(server.py)가 실행 중이지 않습니다.\n터미널에서 'python server.py' 또는 'run.bat'을 실행해주세요.`);
+            }
+
+            const contentType = res.headers.get('content-type') || '';
+            let data = null;
+
+            if (contentType.includes('application/json')) {
+                try {
+                    data = await res.json();
+                } catch (e) {
+                    data = null;
+                }
+            } else {
+                // HTML 응답이 들어온 경우 (예: python -m http.server 등의 정적 서버가 501/404 HTML 반환)
+                const text = await res.text().catch(() => '');
+                if (text.trim().startsWith('<') || text.includes('<!DOCTYPE')) {
+                    throw new Error(`🚨 백엔드 API 서버(server.py)에 연결되지 않았습니다 (HTTP ${res.status}).\n단순 정적 파일 서버(python http.server 등)로는 WebAuthn 패스키 인증을 처리할 수 없습니다.\n터미널에서 'python server.py' 또는 'run.bat'을 실행해주세요.`);
+                }
+            }
+
+            return { res, data };
+        }
+
         /* --- PRIVATE DASHBOARD DYNAMIC LOADER --- */
         let currentAuthStatus = { authenticated: false, activePasskeyName: null, registeredPasskeysCount: 0 };
 
@@ -1688,11 +1717,10 @@
 
             try {
                 // 1단계: 서버에 등록용 질문(Challenge) 요청
-                const optionsRes = await fetch('/api/auth/register-options', { method: 'POST' });
-                if (!optionsRes.ok) {
-                    throw new Error('서버 챌린지 생성 요청 실패');
+                const { res: optionsRes, data: creationOptions } = await safeFetchJson('/api/auth/register-options', { method: 'POST' });
+                if (!optionsRes.ok || !creationOptions || !creationOptions.challenge) {
+                    throw new Error((creationOptions && creationOptions.message) || `서버 챌린지 생성 요청 실패 (HTTP ${optionsRes.status})`);
                 }
-                const creationOptions = await optionsRes.json();
 
                 // 2단계: 바이너리 변환 (Base64URL -> ArrayBuffer)
                 creationOptions.challenge = base64urlToBuffer(creationOptions.challenge);
@@ -1724,13 +1752,15 @@
                     // ※ 주의: 어떠한 경우에도 privateKey나 password 필드는 포함되지 않음
                 };
 
-                const verifyRes = await fetch('/api/auth/register-verify', {
+                const { res: verifyRes, data: verifyResult } = await safeFetchJson('/api/auth/register-verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(verifyPayload),
                 });
 
-                const verifyResult = await verifyRes.json();
+                if (!verifyResult) {
+                    throw new Error(`패스키 등록 검증 응답 형식 오류 (HTTP ${verifyRes.status})`);
+                }
                 if (verifyResult.success) {
                     alert(`🎉 [${passkeyName}] 패스키 등록이 완료되었습니다!\n서버에 공개키가 안전하게 저장되었습니다.`);
                     await loadPrivateDashboard();
@@ -1813,11 +1843,10 @@
 
             try {
                 // 1단계: 서버에 로그인 일회용 질문(Challenge) 및 등록된 패스키 ID 요청
-                const optionsRes = await fetch('/api/auth/login-options', { method: 'POST' });
-                const loginOptions = await optionsRes.json();
+                const { res: optionsRes, data: loginOptions } = await safeFetchJson('/api/auth/login-options', { method: 'POST' });
 
-                if (!optionsRes.ok || !loginOptions.challenge) {
-                    alert(loginOptions.message || '로그인 옵션 요청 실패: 먼저 패스키를 등록해주세요.');
+                if (!optionsRes.ok || !loginOptions || !loginOptions.challenge) {
+                    alert((loginOptions && loginOptions.message) || `로그인 옵션 요청 실패 (HTTP ${optionsRes.status}): 먼저 패스키를 등록해주세요.`);
                     return;
                 }
 
@@ -1850,13 +1879,15 @@
                     signature: bufferToBase64url(assertion.response.signature),
                 };
 
-                const verifyRes = await fetch('/api/auth/login-verify', {
+                const { res: verifyRes, data: verifyResult } = await safeFetchJson('/api/auth/login-verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(verifyPayload),
                 });
 
-                const verifyResult = await verifyRes.json();
+                if (!verifyResult) {
+                    throw new Error(`로그인 서명 검증 응답 형식 오류 (HTTP ${verifyRes.status})`);
+                }
                 if (verifyResult.success) {
                     updateConsoleWithPacket(verifyPayload, verifyResult, 200, '성공한 로그인 요청');
                     alert(`🎉 [${verifyResult.user} 님] 패스키(Windows Hello PIN) 로그인 성공!`);
