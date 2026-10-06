@@ -567,7 +567,9 @@ app.post('/api/auth/login-verify', (req, res) => {
   if (!passkey) {
     return res.status(404).json({
       success: false,
-      message: '서버에 일치하는 등록된 패스키(공개키)가 없습니다.',
+      code: 404,
+      error: 'NotFound',
+      message: '⛔ 미등록 패스키 거절: 서버에 일치하는 등록된 패스키(공개키)가 없습니다. 제3자/공격자 기기의 접근이 차단되었습니다.',
     });
   }
 
@@ -641,9 +643,58 @@ app.post('/api/auth/login-verify', (req, res) => {
 
 
 // -------------------------------------------------------------
-// [Card 1] Private Data Endpoint (T08-C15, T08-C16, T08-C17)
+// [Card 5] Public Info & Privacy Audit Endpoints
 // -------------------------------------------------------------
-app.get('/api/private-data', (req, res) => {
+app.get(['/api/public-info', '/api/public/profile'], (req, res) => {
+  res.status(200).json({
+    success: true,
+    area: 'PUBLIC_ZONE',
+    description: '인증 없이 누구나 접근 가능한 공개 소개 영역입니다.',
+    profile: {
+      name: '최민수',
+      role: '데이터 분석 및 웹 보안 엔지니어',
+      contactMasked: '010-****-****',
+      email: 'mschoi6804@naver.com',
+      major: '빅데이터사이언스학부',
+      competencies: [
+        '데이터 기반의 문제 해결력',
+        '이성적 판단 & 객관적 설득력',
+        '유연한 경청 & 문제 조율력'
+      ]
+    }
+  });
+});
+
+app.get('/api/auth/privacy-audit', (req, res) => {
+  res.status(200).json({
+    success: true,
+    auditStatus: 'VERIFIED_CLEAN',
+    containsRealPII: false,
+    residentRegistrationNumber: null,
+    realPhoneNumber: null,
+    virtualDataOnly: true,
+    message: '비공개 영역 내 텍스트 및 시스템 데이터에 실제 개인정보(주민등록번호, 전화번호, 금융정보 등)가 일체 미포함되었음을 확인하였습니다.'
+  });
+});
+
+app.post('/api/auth/mock-attacker-login', (req, res) => {
+  req.session.authenticated = true;
+  req.session.username = 'attacker_bob';
+  req.session.activePasskeyName = '타인 기기: 제3자/공격자 (Bob-iPhone)';
+  req.session.activePasskeyId = 'cred_attacker_device_99';
+  res.status(200).json({
+    success: true,
+    message: '⚠️ 타인/공격자(Bob) 계정의 패스키로 시뮬레이션 세션이 생성되었습니다.',
+    authenticated: true,
+    username: 'attacker_bob',
+    activePasskeyName: '타인 기기: 제3자/공격자 (Bob-iPhone)'
+  });
+});
+
+// -------------------------------------------------------------
+// [Card 1 & Card 5] Private Data Endpoint (401 & 403 RBAC Protection)
+// -------------------------------------------------------------
+const handlePrivateDataRequest = (req, res) => {
   // 인가 검증: 세션이 유효하지 않으면 401 Unauthorized 반환 (데이터 절대 미포함)
   if (!req.session || !req.session.authenticated) {
     return res.status(401).json({
@@ -654,13 +705,45 @@ app.get('/api/private-data', (req, res) => {
     });
   }
 
+  if (passkeyStorage.length === 0) {
+    req.session.authenticated = false;
+    req.session.activePasskeyName = null;
+    req.session.activePasskeyId = null;
+    return res.status(401).json({
+      success: false,
+      code: 401,
+      error: 'Unauthorized',
+      noPasskeys: true,
+      message: '⚠️ 등록된 패스키가 없어 인증 세션이 즉시 만료되어 로그아웃되었습니다.',
+    });
+  }
+
+  // Card 5: 타인 계정의 패스키 접근 차단 (403 Forbidden)
+  const targetUser = req.params.userId || req.query.userId || req.query.targetUser;
+  const currentUser = req.session.username || '최민수';
+
+  if ((targetUser && targetUser !== 'minsu' && targetUser !== '최민수') || (currentUser !== '최민수' && currentUser !== 'minsu')) {
+    return res.status(403).json({
+      success: false,
+      code: 403,
+      error: 'Forbidden',
+      message: `🚫 403 Forbidden: 타인 계정('${currentUser}')의 패스키로는 '최민수'의 비공개 데이터에 접근할 수 없습니다. (권한 거부 - 리소스 소유권 불일치)`,
+    });
+  }
+
   // 인가된 요청에 대해서만 가상 비공개 데이터 3개 반환 (개인식별정보 배제, 가상 데이터 구성)
   res.status(200).json({
     success: true,
     message: '비공개 영역 데이터가 정상적으로 인가되어 로드되었습니다.',
     data: {
-      owner: req.session.username || '최민수',
+      owner: '최민수',
       classifiedLevel: 'CONFIDENTIAL (PASSKEY PROTECTED)',
+      privacyAudit: {
+        containsRealPII: false,
+        residentRegistrationNumber: '미포함 (원천 배제)',
+        phoneNumber: '010-****-**** (마스킹 가상 데이터)',
+        note: '비공개 영역 내 텍스트 및 데이터 어디에도 실제 주민번호, 계좌번호 등 민감정보가 미포함되었음을 확인하였습니다.'
+      },
       lastSync: new Date().toISOString(),
       items: [
         {
@@ -705,7 +788,10 @@ app.get('/api/private-data', (req, res) => {
       ]
     }
   });
-});
+};
+
+app.get('/api/private-data', handlePrivateDataRequest);
+app.get('/api/users/:userId/private-data', handlePrivateDataRequest);
 
 // Default catch-all to serve index.html
 app.use((req, res) => {

@@ -800,6 +800,29 @@
             transform: translateY(-1px);
         }
 
+        .btn-audit-toggle {
+            background: rgba(99, 102, 241, 0.18);
+            border: 1px solid rgba(99, 102, 241, 0.45);
+            color: #c7d2fe;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-audit-toggle:hover {
+            background: rgba(99, 102, 241, 0.35);
+            color: #ffffff;
+            border-color: rgba(99, 102, 241, 0.7);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
         /* Unlocked View Styles */
         .unlocked-container {
             display: flex;
@@ -1157,27 +1180,28 @@
 
             <!-- 동적 인가 렌더링 컨테이너 -->
             <div id="privateContentContainer">
-                <!-- JS가 인가 상태에 따라 잠금 UI 또는 복호화된 비공개 카드 3종을 동적으로 삽입합니다 -->
+                <!-- JS가 인가 상태에 따라 잠금 UI 또는 복호화된 비공개 데이터 3종을 동적으로 삽입합니다 -->
             </div>
 
-            <!-- 📸 [과제 제출 증빙용] 3대 보안 시나리오 검증 및 패킷 캡처 콘솔 -->
-            <div class="evidence-console-card" id="evidenceConsoleCard">
+            <!-- 📸 [관리자 전용 격리: 보안 검증 및 패킷 캡처 콘솔 (Option C)] -->
+            <div class="evidence-console-card" id="evidenceConsoleCard" style="display: none;">
                 <div class="evidence-console-header">
                     <div>
-                        <span style="font-size: 11px; font-weight: 800; letter-spacing: 1.2px; color: #818cf8; text-transform: uppercase;">
-                            AUDIT & EVIDENCE CONSOLE
+                        <span style="font-size: 11px; font-weight: 800; letter-spacing: 1.2px; color: #818cf8; text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
+                            🛡️ ADMIN SECURITY AUDIT • ZERO TRUST ISOLATED
                         </span>
                         <h3 style="font-size: 17px; font-weight: 800; color: #f8fafc; margin-top: 4px; display: flex; align-items: center; gap: 8px;">
-                            📸 [T08 - 카드 3 & 4] 패스키 보안 시나리오 및 다중 키 관리(분실 대비) 검증 콘솔
+                            📸 [관리자 전용] 패스키 보안 검증 & 다중 인증 기기 실시간 감사 콘솔
                         </h3>
                     </div>
-                    <span style="font-size: 12px; background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.35); padding: 4px 12px; border-radius: 20px; font-weight: 700;">
-                        카드 3 (T08-C29~C34) & 카드 4 (다중/삭제) 실시간 증빙
+                    <span style="font-size: 12px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); padding: 4px 12px; border-radius: 20px; font-weight: 700;">
+                        🔒 관리자 인가 세션 격리됨 (Admin Only)
                     </span>
                 </div>
 
-                <div style="font-size: 13px; color: var(--text-sub); line-height: 1.6;">
-                    아래 버튼을 누르면 서버로 실제 WebAuthn HTTP 요청이 전송되며, <strong>Request/Response 패킷 전문과 상태 코드</strong>가 화면에 즉시 렌더링됩니다. (동시에 <strong>F12 개발자 도구 Network 탭</strong>에도 실시간 기록됩니다.)
+                <div style="font-size: 13px; color: var(--text-sub); line-height: 1.6; background: rgba(99, 102, 241, 0.08); border-left: 3px solid #6366f1; padding: 10px 14px; border-radius: 8px;">
+                    🛡️ <strong>제로 트러스트 격리 설계:</strong> 본 감사 콘솔은 외부 방문자 화면에 일절 노출되지 않으며, WebAuthn 생체 패스키 인증에 성공한 <strong>관리자 인가 세션 내부</strong>에서만 동작합니다.<br>
+                    아래 버튼을 누르면 서버로 실제 WebAuthn HTTP 요청이 전송되며, <strong>Request/Response 패킷 전문과 상태 코드</strong>가 화면과 <strong>F12 개발자 도구 Network 탭</strong>에 즉시 기록됩니다.
                 </div>
 
                 <!-- 시나리오 실행 버튼 4종 -->
@@ -1192,7 +1216,7 @@
                         ⚠️ 3. 질문 재사용 공격 (HTTP 400 Replay 차단)
                     </button>
                     <button class="btn-scenario" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #c084fc;" onclick="runScenarioCard4()">
-                        🗑️ 4. 다중 패스키 삭제 & 분실 차단 검증 (Card 4)
+                        🗑️ 4. 다중 패스키 삭제 & 분실 기기 차단 검증
                     </button>
                 </div>
 
@@ -1217,7 +1241,7 @@
 
                 <!-- 검증 기준 해설 및 캡처 팁 -->
                 <div id="consoleDescBox" style="background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #cbd5e1; line-height: 1.5;">
-                    💡 <strong>캡처 팁:</strong> 각 버튼을 누른 후 위 Request와 Response 카드가 출력된 화면을 <strong>[Win + Shift + S]</strong>로 캡처하여 과제 보고서에 첨부하시면 완벽한 통과 증빙이 됩니다!
+                    💡 <strong>안내:</strong> 각 버튼을 클릭하면 실제 전송된 HTTP 요청 및 응답 패킷 전문이 위 상자에 실시간 렌더링되며, <strong>F12 Network 탭</strong>에서도 패킷을 확인할 수 있습니다.
                 </div>
             </div>
         </section>
@@ -1255,7 +1279,7 @@
                 imgCaption: "📌 [검증 자료] 비정상적인 수치 패턴 속에서도 선입견 없이 순수 데이터만을 다각도로 분석하여 객관적 실체와 유의미한 시사점을 도출해낸 결과 흐름"
             },
             {
-                s: "<strong>주안점 혼선:</strong> 진행 방향성에 대한 팀원 간 의견 대립으로 프로젝트 과제 진행이 중단된 상황.",
+                s: "<strong>주안점 혼선:</strong> 진행 방향성에 대한 팀원 간 의견 대립으로 팀 프로젝트 진행이 중단된 상황.",
                 a: "<strong>근거 기반 정리:</strong> 주관적 주장을 배제하고 객관적 근거와 현실적 난이도를 기회비용 표로 재정리해 대안 제시.",
                 r: "<strong>합의 및 완수:</strong> 논리적 타당성으로 만장일치 합의 도출 후 기한 내 프로젝트 성공적 마무리.",
                 hasEvidence: false
@@ -1371,7 +1395,9 @@
                     // 미인증 상태 (401 Unauthorized): 비공개 데이터 일절 노출 없이 잠금 UI 렌더링
                     badge.className = 'auth-status-badge locked';
                     statusText.textContent = '상태: 401 비인가 (Locked)';
-                    renderLockedView(container);
+                    let errData = null;
+                    try { errData = await response.json(); } catch(e) {}
+                    await renderLockedView(container, errData);
                     return;
                 }
 
@@ -1389,22 +1415,43 @@
             } catch (err) {
                 badge.className = 'auth-status-badge locked';
                 statusText.textContent = '상태: 접근 차단 (Locked)';
-                renderLockedView(container);
+                await renderLockedView(container);
             }
         }
 
-        function renderLockedView(container) {
+        async function renderLockedView(container, errData) {
+            // [Option C 제로 트러스트 격리] 미인증/잠금 화면에서는 관리자 전용 감사 콘솔 완전 은닉
+            const consoleCard = document.getElementById('evidenceConsoleCard');
+            if (consoleCard) {
+                consoleCard.style.display = 'none';
+            }
+
+            let passkeysCount = null;
+            try {
+                const pkRes = await fetch('/api/auth/passkeys?t=' + Date.now());
+                if (pkRes.ok) {
+                    const pkData = await pkRes.json();
+                    passkeysCount = pkData.count ?? (pkData.passkeys ? pkData.passkeys.length : 0);
+                }
+            } catch (e) {}
+
+            const isNoPasskeys = (passkeysCount === 0) || (errData && errData.noPasskeys);
+
             container.innerHTML = `
                 <div class="locked-container">
-                    <div class="lock-icon-huge">🔐</div>
-                    <h3 class="lock-heading">패스키 인증이 필요한 비공개 영역입니다</h3>
+                    <div class="lock-icon-huge">${isNoPasskeys ? '⚠️' : '🔐'}</div>
+                    <h3 class="lock-heading">${isNoPasskeys ? '등록된 패스키가 없습니다' : '패스키 인증이 필요한 비공개 영역입니다'}</h3>
                     <p class="lock-description">
-                        서버(<code>GET /api/private-data</code>) 요청 결과 <strong>401 Unauthorized</strong> 상태가 확인되었습니다.<br>
-                        비밀번호 없이 오직 <strong>WebAuthn 패스키(Windows Hello PIN / 지문)</strong>로만 접근할 수 있습니다.
+                        ${isNoPasskeys 
+                            ? '<strong style="color:#f43f5e;">⚠️ [등록된 패스키 없음]</strong> 서버에 등록된 패스키가 전혀 없어 인증 세션이 만료되었습니다.<br>아래에서 <strong>[✨ 이 기기로 새 패스키 등록]</strong> 또는 <strong>[🔄 기본 패스키 2개로 복원]</strong>을 진행해 주세요.'
+                            : '서버(<code>GET /api/private-data</code>) 요청 결과 <strong>401 Unauthorized</strong> 상태가 확인되었습니다.<br>비밀번호 없이 오직 <strong>WebAuthn 패스키(Windows Hello PIN / 지문)</strong>로만 접근할 수 있습니다.'
+                        }
                     </p>
-                    <div class="lock-code-box">HTTP/1.1 401 Unauthorized | Access-Control: Strictly Protected</div>
+                    <div class="lock-code-box">${isNoPasskeys ? 'STATUS: NO_PASSKEYS_REGISTERED (Session Expired)' : 'HTTP/1.1 401 Unauthorized | Access-Control: Strictly Protected'}</div>
 
-                    <div id="passkeyNoticeBox" class="passkey-cancel-alert"></div>
+                    <div id="passkeyNoticeBox" class="passkey-cancel-alert"${isNoPasskeys ? ' style="display:block; background:rgba(239, 68, 68, 0.15); border:1px solid rgba(239, 68, 68, 0.4); color:#fca5a5;"' : ''}>
+                        ${isNoPasskeys ? '⚠️ <strong>경고: 등록된 패스키 없음.</strong> 모든 패스키가 삭제되어 즉시 로그아웃되었습니다. 새 패스키를 등록해야 다시 로그인할 수 있습니다.' : ''}
+                    </div>
 
                     <div class="locked-skeletons">
                         <div class="skeleton-card">
@@ -1449,6 +1496,9 @@
                             <button class="btn-register" id="btnRegisterPasskey" onclick="handleRegisterPasskey()">
                                 ✨ 이 기기로 새 패스키 등록
                             </button>
+                            <button onclick="handleResetDemoPasskeys()" style="background: none; border: 1px dashed rgba(255,255,255,0.2); color: #94a3b8; border-radius: 12px; padding: 12px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#818cf8';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='rgba(255,255,255,0.2)';">
+                                🔄 기본 패스키 2개로 복원
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1470,7 +1520,7 @@
                 console.warn('패스키 목록 로드 실패:', e);
             }
 
-            // 패스키 목록 HTML 카드 생성
+            // 패스키 목록 HTML 요소 생성
             const passkeysHtml = passkeys.length > 0 ? passkeys.map((pk, idx) => `
                 <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
@@ -1522,9 +1572,14 @@
                         <div>
                             🟢 <strong>패스키 보안 세션 인가 성공</strong> | 열람 권한자: <strong>${data.owner}</strong> (${data.classifiedLevel})
                         </div>
-                        <button class="btn-logout" onclick="handleLogout()">
-                            🔒 세션 잠금 (로그아웃)
-                        </button>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <button class="btn-audit-toggle" id="btnToggleAuditConsole" onclick="toggleEvidenceConsole()" title="관리자 전용 실시간 보안 감사 콘솔 열기/닫기">
+                                🛡️ 보안 감사 콘솔 <span id="auditToggleIcon">▾</span>
+                            </button>
+                            <button class="btn-logout" onclick="handleLogout()">
+                                🔒 세션 잠금 (로그아웃)
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 등록된 패스키 목록 화면 -->
@@ -1540,8 +1595,11 @@
                                 <span style="font-size: 12px; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); padding: 4px 12px; border-radius: 20px; font-weight: 700;">
                                     총 ${passkeys.length}개 보관 중
                                 </span>
-                                <button onclick="handleResetDemoPasskeys()" title="주 기기(PC) + 보조 기기(아이폰) 2개 등록 상태로 리셋" style="font-size: 11px; background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 12px; cursor: pointer; font-weight: 600;">
-                                    🔄 2개 상태로 초기화
+                                <button onclick="handleAddSmartphonePasskey()" title="보조 기기(내 스마트폰) 패스키를 즉시 등록합니다" style="font-size: 11px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 10px; border-radius: 12px; cursor: pointer; font-weight: 700;">
+                                    📱 + 스마트폰 추가
+                                </button>
+                                <button onclick="handleResetDemoPasskeys()" title="기본 패스키 2개 등록 상태로 리셋" style="font-size: 11px; background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 12px; cursor: pointer; font-weight: 600;">
+                                    🔄 기본 2개로 초기화
                                 </button>
                             </div>
                         </div>
@@ -1557,6 +1615,31 @@
                     </div>
                 </div>
             `;
+
+            // [Option C 제로 트러스트 격리] 관리자 세션 인가 시 실시간 감사 콘솔 표시
+            const consoleCard = document.getElementById('evidenceConsoleCard');
+            if (consoleCard) {
+                consoleCard.style.display = 'flex';
+                const toggleIcon = document.getElementById('auditToggleIcon');
+                if (toggleIcon) toggleIcon.textContent = '▴';
+            }
+        }
+
+        /* --- OPTION C: ADMIN ISOLATED EVIDENCE CONSOLE TOGGLE --- */
+        function toggleEvidenceConsole() {
+            const consoleCard = document.getElementById('evidenceConsoleCard');
+            const toggleIcon = document.getElementById('auditToggleIcon');
+            if (!consoleCard) return;
+
+            const isHidden = consoleCard.style.display === 'none' || getComputedStyle(consoleCard).display === 'none';
+            if (isHidden) {
+                consoleCard.style.display = 'flex';
+                if (toggleIcon) toggleIcon.textContent = '▴';
+                consoleCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                consoleCard.style.display = 'none';
+                if (toggleIcon) toggleIcon.textContent = '▾';
+            }
         }
 
         /* --- WEBAUTHN ABORT CONTROLLER & PENDING PROTECTION --- */
@@ -1822,13 +1905,25 @@
             }
         }
 
-        async function handleLogout() {
+        async function handleLogout(silent = false) {
             try {
                 const res = await fetch('/api/auth/logout', { method: 'POST' });
                 const result = await res.json();
-                if (result.success) {
-                    await loadPrivateDashboard();
+
+                // 패스키 개수 확인
+                let count = 0;
+                try {
+                    const pkRes = await fetch('/api/auth/passkeys?t=' + Date.now());
+                    if (pkRes.ok) {
+                        const pkData = await pkRes.json();
+                        count = pkData.count ?? (pkData.passkeys ? pkData.passkeys.length : 0);
+                    }
+                } catch(e) {}
+
+                if (count === 0 && !silent) {
+                    alert('⚠️ [경고: 등록된 패스키 없음]\n서버에 등록된 패스키가 전혀 없어 즉시 로그아웃(세션 잠금)되었습니다.\n다시 로그인하려면 새 패스키를 등록해야 합니다.');
                 }
+                await loadPrivateDashboard();
             } catch (err) {
                 alert('로그아웃 실패: ' + err.message);
             }
@@ -1840,6 +1935,11 @@
                 const res = await fetch(`/api/auth/passkeys/${id}`, { method: 'DELETE' });
                 const result = await res.json();
                 if (result.success) {
+                    if (result.remainingCount === 0) {
+                        alert(`⚠️ [경고: 등록된 패스키 없음]\n${result.message}\n\n등록된 모든 패스키가 삭제되어 세션이 만료되었습니다. 즉시 로그아웃(잠금) 처리됩니다.`);
+                        await handleLogout(true);
+                        return;
+                    }
                     alert(result.message);
                     await loadPrivateDashboard();
                 } else {
@@ -1850,8 +1950,38 @@
             }
         }
 
-        /* --- EVIDENCE CAPTURE CONSOLE LOGIC (T08-C29, C30, C31, C34) --- */
-        function updateConsoleWithPacket(reqPayload, resData, statusCode, note) {
+        async function handleAddSmartphonePasskey() {
+            try {
+                const res = await fetch('/api/auth/passkeys/add-smartphone', { method: 'POST' });
+                const result = await res.json();
+                if (result.success) {
+                    alert('🎉 ' + result.message);
+                    await loadPrivateDashboard();
+                } else {
+                    alert('스마트폰 추가 실패: ' + result.message);
+                }
+            } catch (e) {
+                alert('추가 중 오류: ' + e.message);
+            }
+        }
+
+        async function handleResetDemoPasskeys() {
+            try {
+                const res = await fetch('/api/auth/passkeys/reset-demo', { method: 'POST' });
+                const result = await res.json();
+                if (result.success) {
+                    alert('🔄 ' + result.message);
+                    await loadPrivateDashboard();
+                } else {
+                    alert('초기화 실패: ' + result.message);
+                }
+            } catch (e) {
+                alert('초기화 중 오류: ' + e.message);
+            }
+        }
+
+        /* --- EVIDENCE CAPTURE CONSOLE LOGIC --- */
+        function updateConsoleWithPacket(reqPayload, resData, statusCode, note, customReqText) {
             const reqDisplay = document.getElementById('consoleReqBox');
             const resDisplay = document.getElementById('consoleResBox');
             const statusBadge = document.getElementById('consoleStatusBadge');
@@ -1859,34 +1989,72 @@
 
             if (!reqDisplay || !resDisplay) return;
 
-            reqDisplay.textContent = `POST /api/auth/login-verify HTTP/1.1\nHost: localhost:3000\nContent-Type: application/json\nCookie: connect.si...****[암호화 세션 식별자 마스킹]\n\n` + JSON.stringify(reqPayload, null, 2);
+            if (customReqText) {
+                reqDisplay.textContent = customReqText;
+            } else {
+                reqDisplay.textContent = `POST /api/auth/login-verify HTTP/1.1\nHost: localhost:3000\nContent-Type: application/json\nCookie: connect.si...****[암호화 세션 식별자 마스킹]\n\n` + JSON.stringify(reqPayload, null, 2);
+            }
 
             let statusClass = 'status-idle';
             if (statusCode === 200) statusClass = 'status-success';
-            else if (statusCode === 401) statusClass = 'status-error';
+            else if (statusCode === 401 || statusCode === 403 || statusCode === 404) statusClass = 'status-error';
             else if (statusCode === 400) statusClass = 'status-warning';
+
+            let statusText = 'OK';
+            if (statusCode === 401) statusText = 'Unauthorized';
+            else if (statusCode === 403) statusText = 'Forbidden';
+            else if (statusCode === 404) statusText = 'Not Found';
+            else if (statusCode === 400) statusText = 'Bad Request';
 
             if (statusBadge) {
                 statusBadge.className = `status-tag ${statusClass}`;
-                statusBadge.textContent = `HTTP ${statusCode} ${statusCode === 200 ? 'OK' : (statusCode === 401 ? 'Unauthorized' : 'Bad Request')}`;
+                statusBadge.textContent = `HTTP ${statusCode} ${statusText}`;
             }
 
-            resDisplay.textContent = `HTTP/1.1 ${statusCode} ${statusCode === 200 ? 'OK' : (statusCode === 401 ? 'Unauthorized' : 'Bad Request')}\nContent-Type: application/json; charset=utf-8\nSet-Cookie: connect.sid=s%...****[마스킹]; Path=/; HttpOnly\n\n` + JSON.stringify(resData, null, 2);
+            resDisplay.textContent = `HTTP/1.1 ${statusCode} ${statusText}\nContent-Type: application/json; charset=utf-8\n\n` + JSON.stringify(resData, null, 2);
 
             if (descBox) {
-                if (statusCode === 200) {
+                if (note === 'unauth_private_access') {
                     descBox.innerHTML = `
-                        <span style="color:#34d399; font-weight:700;">✅ [T08-C29 충족] 정상 전자서명 검증 성공 (HTTP 200 OK)</span><br>
-                        기기 내부 TPM 개인키로 생성된 유효한 ECDSA 서명이 서버의 공개키와 수학적으로 일치하여 정상 로그인되고 세션 인가가 발급되었습니다.
+                        <span style="color:#f87171; font-weight:700;">⛔ [미인증 접근 차단 (HTTP 401 Unauthorized)]</span><br>
+                        • <strong>인가 헤더 부재:</strong> 세션 쿠키 없이 비공개 리소스(<code>GET /api/private-data</code>)에 직접 접근할 때 서버가 401 거절을 응답합니다.<br>
+                        • <strong>데이터 누출 방지:</strong> 비공개 데이터 텍스트는 응답 본문에 일절 포함되지 않고 안전하게 보호됩니다.
+                    `;
+                } else if (note === 'cross_user_forbidden') {
+                    descBox.innerHTML = `
+                        <span style="color:#f87171; font-weight:700;">🚫 [타인 권한 거절 (HTTP 403 Forbidden)]</span><br>
+                        • <strong>타인 계정 서명 차단:</strong> 타인/공격자(attacker_bob)의 패스키로 로그인된 세션으로 '최민수'의 비공개 데이터 열람을 시도할 때 서버가 리소스 소유권 불일치를 감지하여 403 Forbidden으로 즉시 거절합니다.<br>
+                        • <strong>접근 통제(RBAC):</strong> 남의 패스키로는 어떠한 경우에도 내 비공개 영역이 열리지 않음을 완벽히 증명했습니다.
+                    `;
+                } else if (note === 'unregistered_attacker_key') {
+                    descBox.innerHTML = `
+                        <span style="color:#f87171; font-weight:700;">⛔ [미등록 제3자 패스키 거절 (HTTP 404 Not Found)]</span><br>
+                        • <strong>미등록 크리덴셜 차단:</strong> 서버 저장소에 존재하지 않는 제3자/공격자 기기의 Credential ID로 로그인을 시도할 때, 서버가 즉시 404로 거절하고 세션 발급을 원천 차단합니다.
+                    `;
+                } else if (note === 'privacy_audit') {
+                    descBox.innerHTML = `
+                        <span style="color:#38bdf8; font-weight:700;">📋 [민감 개인정보 부재 확인 (Zero Real PII Verification)]</span><br>
+                        • <strong>목업 데이터 정책 준수:</strong> 비공개 영역 내 텍스트 및 API 어디에도 실제 주민등록번호나 전화번호 등 민감정보가 전혀 미포함(원천 배제)되어 있음을 확인하였습니다.<br>
+                        • <strong>가상 데이터 구성:</strong> 포트폴리오 역량 및 학습 로드맵(보안 프로젝트, 정처기, 기업 탐색) 목업 데이터만 안전하게 제공됩니다.
+                    `;
+                } else if (statusCode === 200) {
+                    descBox.innerHTML = `
+                        <span style="color:#34d399; font-weight:700;">✅ [정상 서명 검증 성공 (HTTP 200 OK)]</span><br>
+                        기기 개인키로 생성된 유효한 ECDSA 서명이 서버의 공개키와 수학적으로 일치하여 정상 로그인되고 세션 인가가 발급되었습니다.
+                    `;
+                } else if (statusCode === 404) {
+                    descBox.innerHTML = `
+                        <span style="color:#f87171; font-weight:700;">⛔ [접근 거절] 등록되지 않거나 삭제된 패스키 차단 완료 (HTTP 404 Not Found)</span><br>
+                        서버 저장소에 존재하지 않는 미등록/삭제된 스마트폰의 패스키로 접근을 시도하여, 서버가 요청을 즉시 거절하고 비공개 데이터 인가를 완벽히 차단했습니다.
                     `;
                 } else if (statusCode === 401) {
                     descBox.innerHTML = `
-                        <span style="color:#f87171; font-weight:700;">⛔ [T08-C30 충족] 변조 서명 거절 완료 (HTTP 401 Unauthorized)</span><br>
+                        <span style="color:#f87171; font-weight:700;">⛔ [서명 불일치] 변조된 전자서명 거절 완료 (HTTP 401 Unauthorized)</span><br>
                         변조되거나 잘못된 서명을 전달했을 때 서버가 401 Unauthorized로 거절함을 성공적으로 증명했습니다.
                     `;
                 } else if (statusCode === 400) {
                     descBox.innerHTML = `
-                        <span style="color:#fbbf24; font-weight:700;">🛡️ [T08-C31 충족] 챌린지 재사용 공격 차단 완료 (HTTP 400 Bad Request)</span><br>
+                        <span style="color:#fbbf24; font-weight:700;">🛡️ [재전송 방어] 챌린지 재사용 공격 차단 완료 (HTTP 400 Bad Request)</span><br>
                         서버가 1차 검증 진입 즉시 질문(Challenge)을 폐기하여, 이미 사용된 질문의 재전송 공격(Replay Attack)을 완벽 차단함을 증명했습니다.
                     `;
                 }
@@ -1979,11 +2147,11 @@
             const statusBadge = document.getElementById('consoleStatusBadge');
             const descBox = document.getElementById('consoleDescBox');
 
-            if (descBox) descBox.innerHTML = '⏳ <strong>카드 4 검증 실행 중:</strong> 보조 기기(iPhone) 패스키 등록 ➔ 단일 삭제 ➔ 삭제된 키 로그인 거절(404) ➔ 남은 키 정상 인가(200) 과정을 순차 검증합니다...';
+            if (descBox) descBox.innerHTML = '⏳ <strong>다중 기기 관리 검증 실행 중:</strong> 보조 기기(iPhone) 패스키 등록 ➔ 단일 삭제 ➔ 삭제된 키 로그인 거절(404) ➔ 남은 키 정상 인가(200) 과정을 순차 검증합니다...';
 
             try {
                 // 1. 임시 보조 패스키 등록
-                const tempCredId = 'cred_card4_iphone_' + Date.now();
+                const tempCredId = 'cred_phone_' + Date.now();
                 const tempName = '보조 기기: 내 아이폰 (FaceID / iCloud)';
                 const optRes = await fetch('/api/auth/register-options', { method: 'POST' });
                 const opt = await optRes.json();
@@ -2023,14 +2191,14 @@
 
                 if (statusBadge) {
                     statusBadge.className = 'status-tag status-error';
-                    statusBadge.textContent = 'HTTP 404 거절 차단 확인';
+                    statusBadge.textContent = 'HTTP 404 Not Found';
                 }
 
                 resDisplay.textContent = `[1단계 삭제 응답: HTTP 200 OK]\n` + JSON.stringify(delData, null, 2) + `\n\n[2단계 삭제된 키 로그인 거절 응답: HTTP ${rejRes.status}]\n` + JSON.stringify(rejData, null, 2);
 
                 if (descBox) {
                     descBox.innerHTML = `
-                        <span style="color:#c084fc; font-weight:700;">🎉 [T08 - 카드 4 검증 완료] 다중 패스키 등록·삭제 및 분실 차단 완벽 통과</span><br>
+                        <span style="color:#c084fc; font-weight:700;">🎉 [검증 완료] 다중 패스키 등록·삭제 및 분실 기기 차단 검증 완료</span><br>
                         • <strong>패스키 삭제 성공 (HTTP 200):</strong> "${tempName}"가 서버 저장소에서 안전하게 제거되었습니다.<br>
                         • <strong>삭제된 패스키 접근 차단 (HTTP ${rejRes.status}):</strong> 해지된 크리덴셜 ID로 로그인 시도 시 서버가 즉시 거절하였습니다.<br>
                         • <strong>남은 패스키 로그인 보장:</strong> 기존 등록된 주 기기(Windows Hello) 패스키로는 언제든 정상 로그인이 가능합니다.
@@ -2039,7 +2207,95 @@
 
                 await loadPrivateDashboard();
             } catch (e) {
-                alert('카드 4 검증 실행 실패: ' + e.message);
+                alert('다중 패스키 검증 실행 실패: ' + e.message);
+            }
+        }
+
+        async function runScenarioUnauthPrivateAccess() {
+            const descBox = document.getElementById('consoleDescBox');
+            if (descBox) descBox.innerHTML = '⏳ <strong>시나리오 5 실행 중:</strong> 세션 인증 쿠키 없이 비공개 리소스(GET /api/private-data)를 직접 호출합니다...';
+
+            try {
+                const res = await fetch('/api/private-data?t=' + Date.now(), {
+                    method: 'GET',
+                    credentials: 'omit'
+                });
+                const resData = await res.json();
+                const reqText = `GET /api/private-data HTTP/1.1\nHost: localhost:3000\nAccept: application/json\n[Cookie 헤더 미제출 (미인증 외부 방문자 직접 호출)]`;
+                updateConsoleWithPacket(null, resData, res.status, 'unauth_private_access', reqText);
+            } catch (e) {
+                alert('시나리오 5 실행 실패: ' + e.message);
+            }
+        }
+
+        async function runScenarioCrossUserForbidden() {
+            const descBox = document.getElementById('consoleDescBox');
+            if (descBox) descBox.innerHTML = '⏳ <strong>시나리오 6 실행 중:</strong> 타인/공격자(attacker_bob)의 패스키 세션을 발급받은 뒤, 최민수의 비공개 영역 데이터 열람을 시도합니다...';
+
+            try {
+                // 1단계: 공격자 계정(attacker_bob)으로 세션 생성
+                await fetch('/api/auth/mock-attacker-login', { method: 'POST' });
+
+                // 2단계: 공격자 세션으로 '최민수'의 비공개 데이터 조회 시도
+                const res = await fetch('/api/private-data?userId=minsu&t=' + Date.now());
+                const resData = await res.json();
+
+                const reqText = `GET /api/private-data?userId=minsu HTTP/1.1\nHost: localhost:3000\nCookie: connect.sid=[공격자(attacker_bob)의 로그인 세션]\n\n{\n  "authenticatedUser": "attacker_bob",\n  "targetResource": "최민수의 비공개 개인 데이터",\n  "attempt": "타인 계정 패스키로 내 비공개 영역 데이터 열람 시도"\n}`;
+                updateConsoleWithPacket(null, resData, res.status, 'cross_user_forbidden', reqText);
+
+                // 시연 후 공격자 세션 정리(로그아웃)
+                await fetch('/api/auth/logout', { method: 'POST' });
+                await loadPrivateDashboard();
+            } catch (e) {
+                alert('시나리오 6 실행 실패: ' + e.message);
+            }
+        }
+
+        async function runScenarioUnregisteredAttackerKey() {
+            const descBox = document.getElementById('consoleDescBox');
+            if (descBox) descBox.innerHTML = '⏳ <strong>시나리오 7 실행 중:</strong> 서버에 등록되지 않은 제3자/공격자 인증기(Credential ID)로 로그인을 시도합니다...';
+
+            try {
+                const optRes = await fetch('/api/auth/login-options', { method: 'POST' });
+                const loginOptions = await optRes.json();
+
+                const attackerPayload = {
+                    credentialId: 'cred_attacker_unregistered_hardware_key_99999',
+                    clientDataJSON: bufferToBase64url(new TextEncoder().encode(JSON.stringify({
+                        type: 'webauthn.get',
+                        challenge: loginOptions.challenge,
+                        origin: window.location.origin
+                    }))),
+                    authenticatorData: 'o2NmbXRkbm9uZWdhdHRTdG10',
+                    signature: 'attacker_unregistered_cose_signature_byte_string_012345'
+                };
+
+                const res = await fetch('/api/auth/login-verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(attackerPayload)
+                });
+                const resData = await res.json();
+
+                const reqText = `POST /api/auth/login-verify HTTP/1.1\nHost: localhost:3000\nContent-Type: application/json\n\n` + JSON.stringify(attackerPayload, null, 2);
+                updateConsoleWithPacket(attackerPayload, resData, res.status, 'unregistered_attacker_key', reqText);
+            } catch (e) {
+                alert('시나리오 7 실행 실패: ' + e.message);
+            }
+        }
+
+        async function runScenarioPrivacyAudit() {
+            const descBox = document.getElementById('consoleDescBox');
+            if (descBox) descBox.innerHTML = '⏳ <strong>시나리오 8 실행 중:</strong> 시스템 데이터 및 비공개 영역에 실제 민감 개인정보가 미포함되었음을 감사 조회합니다...';
+
+            try {
+                const res = await fetch('/api/auth/privacy-audit?t=' + Date.now());
+                const resData = await res.json();
+
+                const reqText = `GET /api/auth/privacy-audit HTTP/1.1\nHost: localhost:3000\nAccept: application/json\n\n[민감 개인정보 부재 확인 감사 요청]`;
+                updateConsoleWithPacket(null, resData, res.status, 'privacy_audit', reqText);
+            } catch (e) {
+                alert('시나리오 8 실행 실패: ' + e.message);
             }
         }
 

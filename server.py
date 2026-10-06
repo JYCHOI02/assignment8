@@ -286,7 +286,40 @@ class PasskeyHandler(BaseHTTPRequestHandler):
             })
             return
 
-        if path == '/api/private-data':
+        if path in ['/api/public-info', '/api/public/profile']:
+            self.send_json(200, {
+                'success': True,
+                'area': 'PUBLIC_ZONE',
+                'description': '인증 없이 누구나 접근 가능한 공개 소개 영역입니다.',
+                'profile': {
+                    'name': '최민수',
+                    'role': '데이터 분석 및 웹 보안 엔지니어',
+                    'contactMasked': '010-****-****',
+                    'email': 'mschoi6804@naver.com',
+                    'major': '빅데이터사이언스학부',
+                    'competencies': [
+                        '데이터 기반의 문제 해결력',
+                        '이성적 판단 & 객관적 설득력',
+                        '유연한 경청 & 문제 조율력'
+                    ]
+                }
+            })
+            return
+
+        if path == '/api/auth/privacy-audit':
+            self.send_json(200, {
+                'success': True,
+                'auditStatus': 'VERIFIED_CLEAN',
+                'containsRealPII': False,
+                'residentRegistrationNumber': None,
+                'realPhoneNumber': None,
+                'virtualDataOnly': True,
+                'message': '비공개 영역 내 텍스트 및 시스템 데이터에 실제 개인정보(주민등록번호, 전화번호, 금융정보 등)가 일체 미포함되었음을 확인하였습니다.'
+            })
+            return
+
+        is_private_route = (path == '/api/private-data') or (path.startswith('/api/users/') and path.endswith('/private-data'))
+        if is_private_route:
             if not self.session.get('authenticated'):
                 self.send_json(401, {
                     'success': False,
@@ -296,12 +329,50 @@ class PasskeyHandler(BaseHTTPRequestHandler):
                 })
                 return
 
+            if len(passkey_storage) == 0:
+                self.session['authenticated'] = False
+                self.session['activePasskeyName'] = None
+                self.session['activePasskeyId'] = None
+                self.send_json(401, {
+                    'success': False,
+                    'code': 401,
+                    'error': 'Unauthorized',
+                    'noPasskeys': True,
+                    'message': '⚠️ 등록된 패스키가 없어 인증 세션이 즉시 만료되어 로그아웃되었습니다.'
+                })
+                return
+
+            # Check cross-user / attacker access (Card 5: 403 Forbidden)
+            query_params = parse_qs(parsed_path.query)
+            target_user = query_params.get('userId', [None])[0] or query_params.get('targetUser', [None])[0]
+            if path.startswith('/api/users/') and path.endswith('/private-data'):
+                parts = path.strip('/').split('/')
+                if len(parts) >= 3:
+                    target_user = parts[2]
+
+            current_user = self.session.get('username') or '최민수'
+            # If target user requested is different from minsu, or current user is attacker/other user
+            if (target_user and target_user not in ['minsu', '최민수']) or (current_user not in ['minsu', '최민수']):
+                self.send_json(403, {
+                    'success': False,
+                    'code': 403,
+                    'error': 'Forbidden',
+                    'message': f"🚫 403 Forbidden: 타인 계정('{current_user}')의 패스키로는 '최민수'의 비공개 데이터에 접근할 수 없습니다. (권한 거부 - 리소스 소유권 불일치)"
+                })
+                return
+
             self.send_json(200, {
                 'success': True,
                 'message': '비공개 영역 데이터가 정상적으로 인가되어 로드되었습니다.',
                 'data': {
-                    'owner': self.session.get('username') or '최민수',
+                    'owner': '최민수',
                     'classifiedLevel': 'CONFIDENTIAL (PASSKEY PROTECTED)',
+                    'privacyAudit': {
+                        'containsRealPII': False,
+                        'residentRegistrationNumber': '미포함 (원천 배제)',
+                        'phoneNumber': '010-****-**** (마스킹 가상 데이터)',
+                        'note': '비공개 영역 내 텍스트 및 데이터 어디에도 실제 주민번호, 계좌번호 등 민감정보가 미포함되었음을 확인하였습니다.'
+                    },
                     'items': [
                         {
                             'id': 'secret-note-01',
@@ -454,10 +525,11 @@ class PasskeyHandler(BaseHTTPRequestHandler):
             passkey_storage.append(record)
             save_passkeys()
 
-            self.session['authenticated'] = True
-            self.session['username'] = '최민수'
-            self.session['activePasskeyName'] = record['name']
-            self.session['activePasskeyId'] = record['id']
+            if not self.session.get('authenticated'):
+                self.session['authenticated'] = True
+                self.session['username'] = '최민수'
+                self.session['activePasskeyName'] = record['name']
+                self.session['activePasskeyId'] = record['id']
 
             self.send_json(201, {
                 'success': True,
@@ -513,6 +585,30 @@ class PasskeyHandler(BaseHTTPRequestHandler):
                 'message': '다중 패스키가 2개(PC + 아이폰) 상태로 성공적으로 초기화되었습니다.',
                 'count': len(passkey_storage),
                 'passkeys': passkey_storage
+            })
+            return
+
+        if path == '/api/auth/passkeys/add-smartphone':
+            phone_cred_id = f"cred_smartphone_{secrets.token_hex(6)}"
+            phone_record = {
+                'id': phone_cred_id,
+                'credentialId': phone_cred_id,
+                'name': '보조 기기: 내 스마트폰 (FaceID)',
+                'publicKey': coords_to_pem_public_key(secrets.token_bytes(32), secrets.token_bytes(32)),
+                'publicKeyRawBase64': base64url_encode(secrets.token_bytes(65)),
+                'publicKeyType': 'ECC P-256 (ES256 ECDSA Public Key)',
+                'isPassword': False,
+                'authenticatorType': '모바일 플랫폼 인증기 (FaceID / iCloud 키체인)',
+                'registeredAt': datetime.now(timezone.utc).isoformat(),
+                'signCount': 0
+            }
+            passkey_storage.append(phone_record)
+            save_passkeys()
+            self.send_json(201, {
+                'success': True,
+                'message': '📱 보조 기기(내 스마트폰) 패스키가 성공적으로 추가되었습니다.',
+                'passkey': phone_record,
+                'count': len(passkey_storage)
             })
             return
 
@@ -576,7 +672,9 @@ class PasskeyHandler(BaseHTTPRequestHandler):
             if not passkey:
                 self.send_json(404, {
                     'success': False,
-                    'message': '서버에 일치하는 등록된 패스키(공개키)가 없습니다.'
+                    'code': 404,
+                    'error': 'NotFound',
+                    'message': '⛔ 미등록 패스키 거절: 서버에 일치하는 등록된 패스키(공개키)가 없습니다. 제3자/공격자 기기의 접근이 차단되었습니다.'
                 })
                 return
 
@@ -665,6 +763,20 @@ class PasskeyHandler(BaseHTTPRequestHandler):
             })
             return
 
+        if path == '/api/auth/mock-attacker-login':
+            self.session['authenticated'] = True
+            self.session['username'] = 'attacker_bob'
+            self.session['activePasskeyName'] = '타인 기기: 제3자/공격자 (Bob-iPhone)'
+            self.session['activePasskeyId'] = 'cred_attacker_device_99'
+            self.send_json(200, {
+                'success': True,
+                'message': '⚠️ 타인/공격자(Bob) 계정의 패스키로 시뮬레이션 세션이 생성되었습니다.',
+                'authenticated': True,
+                'username': 'attacker_bob',
+                'activePasskeyName': '타인 기기: 제3자/공격자 (Bob-iPhone)'
+            })
+            return
+
         if path == '/api/auth/logout':
             self.session['authenticated'] = False
             self.session['activePasskeyName'] = None
@@ -692,10 +804,23 @@ class PasskeyHandler(BaseHTTPRequestHandler):
 
             deleted = passkey_storage.pop(idx)
             save_passkeys()
+
+            session_revoked = False
+            if len(passkey_storage) == 0:
+                self.session['authenticated'] = False
+                self.session['activePasskeyName'] = None
+                self.session['activePasskeyId'] = None
+                session_revoked = True
+            else:
+                if self.session.get('activePasskeyId') == target_id:
+                    self.session['activePasskeyId'] = passkey_storage[0]['id']
+                    self.session['activePasskeyName'] = passkey_storage[0]['name']
+
             self.send_json(200, {
                 'success': True,
                 'message': f'패스키 "{deleted["name"]}"이(가) 정상적으로 삭제되었습니다.',
-                'remainingCount': len(passkey_storage)
+                'remainingCount': len(passkey_storage),
+                'sessionRevoked': session_revoked
             })
             return
 

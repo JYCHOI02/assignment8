@@ -1,14 +1,38 @@
 [
   {
-    "id": "Bn0EbFHx_6vwTYqNFzRfsw",
-    "credentialId": "Bn0EbFHx_6vwTYqNFzRfsw",
+    "id": "yOFwI96Gy1kR4e3zRWruPvIrj1uDV2Gmx7lIS8sikBE",
+    "credentialId": "yOFwI96Gy1kR4e3zRWruPvIrj1uDV2Gmx7lIS8sikBE",
+    "name": "주 기기: 내 윈도우 PC (Windows Hello)",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETiwksJysepDKytGcznsjtHj0gRhw\n/kg1+uIzczCey14P62fiaQ4yqh3Qggo4duyMY+ZRV/54gzg3qPAvefUmBQ==\n-----END PUBLIC KEY-----",
+    "publicKeyRawBase64": "pQECAyYgASFYIE4sJLCcrHqQysrRnM57I7R49IEYcP5INfriM3MwnsteIlggD-tn4mkOMqod0IIKOHbsjGPmUVf-eIM4N6jwL3n1JgU",
+    "publicKeyType": "ECC P-256 (ES256 ECDSA Public Key)",
+    "isPassword": false,
+    "authenticatorType": "기기 자체 보안 영역 (Windows Hello / TPM)",
+    "registeredAt": "2026-10-05T00:00:00.000Z",
+    "signCount": 0
+  },
+  {
+    "id": "cred_backup_iphone_faceid_02",
+    "credentialId": "cred_backup_iphone_faceid_02",
+    "name": "보조 기기: 내 아이폰 (FaceID / iCloud 키체인)",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQTDr9JbORrUNry7gP81VH/vi+ZvD\ndWHNipVFK4R2OLNfZ8dRqmtcmk3Lolhe8bLBJErHcxGu3cOkXCU3JxT5Sg==\n-----END PUBLIC KEY-----",
+    "publicKeyRawBase64": "pQECAyYgASFYIIclean_iphone_backup_key_sample_for_assignment8_demonstration_0123456789",
+    "publicKeyType": "ECC P-256 (ES256 ECDSA Public Key)",
+    "isPassword": false,
+    "authenticatorType": "모바일 플랫폼 인증기 (FaceID / iCloud 키체인)",
+    "registeredAt": "2026-10-05T00:00:00.000Z",
+    "signCount": 0
+  },
+  {
+    "id": "UmUy608wYgiTBrIkIZPH14Fr4qzDKctCmYRe2s-tGCM",
+    "credentialId": "UmUy608wYgiTBrIkIZPH14Fr4qzDKctCmYRe2s-tGCM",
     "name": "내 윈도우 PC (Windows Hello)",
-    "publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERySHoXD+rdPXBrDfGH/NO7Mz+SQU\nPXseeIZflEOcfl3/UAA6bgbnroaliAnyF+iTklIc0+BPMN6rmkoMcQAv9Q==\n-----END PUBLIC KEY-----",
-    "publicKeyRawBase64": "pQECAyYgASFYIEckh6Fw_q3T1waw3xh_zTuzM_kkFD17HniGX5RDnH5dIlgg_1AAOm4G566GpYgJ8hfok5JSHNPgTzDeq5pKDHEAL_U",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJBTJzV02byVP9A4a+QkObhgFjWAJ\nZodGd2N2puDYiLCrqm4+3gozBM9ou0+PigtUUT4lewIIDgXMbYrM72d8ew==\n-----END PUBLIC KEY-----",
+    "publicKeyRawBase64": "pQECAyYgASFYICQUyc1dNm8lT_QOGvkJDm4YBY1gCWaHRndjdqbg2IiwIlggq6puPt4KMwTPaLtPj4oLVFE-JXsCCA4FzG2KzO9nfHs",
     "publicKeyType": "ECC P-256 (ES256 ECDSA Public Key)",
     "isPassword": false,
     "authenticatorType": "기기 자체 보안 영역 (Windows Hello / 플랫폼 인증기)",
-    "registeredAt": "2026-10-06T00:53:19.579894+00:00",
+    "registeredAt": "2026-10-06T07:23:45.860304+00:00",
     "signCount": 0
   }
 ]
