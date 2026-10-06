@@ -123,12 +123,15 @@ function parseAttestationAuthData(attestationBuffer) {
     let rawBase64Key = cosePublicKeyBytes.toString('base64url');
 
     if (cosePublicKeyBytes.length >= 64) {
-      // 32바이트 길이의 X, Y 좌표 버퍼 탐색
-      const xIdx = cosePublicKeyBytes.indexOf(Buffer.from([0x20])); // -2 (x)
-      const yIdx = cosePublicKeyBytes.indexOf(Buffer.from([0x21])); // -3 (y)
+      // CBOR COSE P-256: key -2 (0x21) -> byte string (0x58 0x20) -> 32 bytes X
+      //                  key -3 (0x22) -> byte string (0x58 0x20) -> 32 bytes Y
+      const xTag = Buffer.from([0x21, 0x58, 0x20]);
+      const yTag = Buffer.from([0x22, 0x58, 0x20]);
+      const xIdx = cosePublicKeyBytes.indexOf(xTag);
+      const yIdx = cosePublicKeyBytes.indexOf(yTag);
       if (xIdx !== -1 && yIdx !== -1) {
-        const xBuf = cosePublicKeyBytes.slice(xIdx + 2, xIdx + 34);
-        const yBuf = cosePublicKeyBytes.slice(yIdx + 2, yIdx + 34);
+        const xBuf = cosePublicKeyBytes.slice(xIdx + 3, xIdx + 35);
+        const yBuf = cosePublicKeyBytes.slice(yIdx + 3, yIdx + 35);
         if (xBuf.length === 32 && yBuf.length === 32) {
           pemPublicKey = coordsToPemPublicKey(xBuf, yBuf);
         }
@@ -447,6 +450,43 @@ app.delete('/api/auth/passkeys/:id', (req, res) => {
   });
 });
 
+// 패스키 2개 상태로 초기화 (과제 4 검증 시연용)
+app.post('/api/auth/passkeys/reset-demo', (req, res) => {
+  const winKey = passkeyStorage.find(p => p.id === 'yOFwI96Gy1kR4e3zRWruPvIrj1uDV2Gmx7lIS8sikBE') || passkeyStorage[0] || {
+    id: 'yOFwI96Gy1kR4e3zRWruPvIrj1uDV2Gmx7lIS8sikBE',
+    credentialId: 'yOFwI96Gy1kR4e3zRWruPvIrj1uDV2Gmx7lIS8sikBE',
+    name: '주 기기: 내 윈도우 PC (Windows Hello)',
+    publicKey: "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETiwksJysepDKytGcznsjtHj0gRhw\n/kg1+uIzczCey14P62fiaQ4yqh3Qggo4duyMY+ZRV/54gzg3qPAvefUmBQ==\n-----END PUBLIC KEY-----",
+    publicKeyType: 'ECC P-256 (ES256 ECDSA Public Key)',
+    authenticatorType: '기기 자체 보안 영역 (Windows Hello / TPM)',
+    registeredAt: '2026-10-05T00:00:00.000Z',
+    signCount: 0
+  };
+  winKey.name = '주 기기: 내 윈도우 PC (Windows Hello)';
+
+  const iphoneKey = {
+    id: 'cred_backup_iphone_faceid_02',
+    credentialId: 'cred_backup_iphone_faceid_02',
+    name: '보조 기기: 내 아이폰 (FaceID / iCloud 키체인)',
+    publicKey: "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQTDr9JbORrUNry7gP81VH/vi+ZvD\ndWHNipVFK4R2OLNfZ8dRqmtcmk3Lolhe8bLBJErHcxGu3cOkXCU3JxT5Sg==\n-----END PUBLIC KEY-----",
+    publicKeyType: 'ECC P-256 (ES256 ECDSA Public Key)',
+    authenticatorType: '모바일 플랫폼 인증기 (FaceID / iCloud 키체인)',
+    registeredAt: '2026-10-05T00:00:00.000Z',
+    signCount: 0
+  };
+
+  passkeyStorage.length = 0;
+  passkeyStorage.push(winKey, iphoneKey);
+  savePasskeysToDisk();
+
+  res.json({
+    success: true,
+    message: '다중 패스키가 2개(PC + 아이폰) 상태로 성공적으로 초기화되었습니다.',
+    count: passkeyStorage.length,
+    passkeys: passkeyStorage
+  });
+});
+
 // -------------------------------------------------------------
 // [Card 3] WebAuthn Passkey Login Routes (비밀번호 없는 패스키 로그인)
 // -------------------------------------------------------------
@@ -625,41 +665,41 @@ app.get('/api/private-data', (req, res) => {
       items: [
         {
           id: 'secret-note-01',
-          category: '사이드 프로젝트',
-          title: '준비 중인 사이드 프로젝트 아이디어 노트',
-          badge: '아이디어 기획안',
-          icon: '💡',
-          summary: 'AgentShield - WebAuthn 기반 무암호화 로컬 인증 프록시',
+          category: '보안 프로젝트',
+          title: 'ALEPH 보안 프로젝트 진행 예정',
+          badge: '진행 예정',
+          icon: '🛡️',
+          summary: 'ALEPH 기반 웹 보안 및 제로 트러스트(Zero Trust) 아키텍처 실무 연구 프로젝트',
           content: [
-            '기획 배경: 비밀번호 입력 없이 기기 생체인증(FIDO2 Passkey)만으로 내부 관리자 툴에 접근하는 제로 트러스트 프록시',
-            '핵심 기능: 브라우저 WebAuthn API 연동, 비대칭키(공개키-개인키) 서명 검증, 일회용 챌린지 기반 재전송 방지',
-            '진행 상황: 서버 챌린지 발급 및 서명 검증 엔진 프로토타입 작성 완료, 클라이언트 UI 연동 테스트 단계'
+            '프로젝트 개요: WebAuthn 무암호화 패스키 인증 체계 고도화 및 실무형 권한 위임(RBAC) 모델 설계',
+            '핵심 목표: 비인가 접근 탐지 및 차단, FIDO2 기기 생체인증 보안 로직 강화, 안전한 세션 관리 파이프라인 구축',
+            '예정 일정: 아키텍처 설계 완료 후 백엔드 API 연동 및 모의 침투/변조 공격 방어 검증 착수'
           ]
         },
         {
           id: 'secret-note-02',
-          category: '커리어 스크랩',
-          title: '지원 희망 기업 및 포지션 스크랩 목록',
-          badge: '관심 기업/직무',
-          icon: '🎯',
-          summary: '보안 아키텍처 및 대용량 데이터 플랫폼 엔지니어링 포지션',
+          category: '자격증 준비',
+          title: '정보처리기사 자격증 취득 준비 중',
+          badge: '자격 취득',
+          icon: '📜',
+          summary: '2026년 정보처리기사 필기 및 실기 동차 합격을 위한 체계적 학습 로드맵',
           content: [
-            '1. [가상기업 A] 알파 시큐리티 - 인증/인가 플랫폼 백엔드 개발자 (Passkey/FIDO2 기반 계정 보안 설계)',
-            '2. [가상기업 B] 넥스트 데이터 솔루션 - 데이터 파이프라인 엔지니어 (분산 로그 수집 및 실시간 분석 시스템 운영)',
-            '3. [가상기업 C] 하이퍼 클라우드 - 클라우드 네이티브 인프라 보안 연구원 (Zero-Trust 접근 제어 체계 연구)'
+            '소프트웨어 설계/구축: 객체지향 설계 패턴, 데이터 모델링 및 정규화, 네트워크 프로토콜 이론 정립',
+            '프로그래밍 언어 및 보안: SQL 응용 쿼리 최적화, 암호화 알고리즘(RSA/ECC) 및 보안 취약점 점검',
+            '학습 현황: 핵심 요약집 회독 완료 및 기출문제 풀이 병행, 실기 실습(알고리즘/SQL) 집중 훈련 중'
           ]
         },
         {
           id: 'secret-note-03',
-          category: '학습 회고',
-          title: '월간 학습 및 역량 개발 자체 회고록',
-          badge: '2026 회고록',
-          icon: '📖',
-          summary: 'WebAuthn 무암호화 패스키 표준 체득과 비인가 제어 아키텍처 수립',
+          category: '취업 및 진로',
+          title: '가고싶은 기업 탐색 중',
+          badge: '목표 기업 탐색',
+          icon: '🎯',
+          summary: '백엔드 엔지니어링 및 정보보안 역량을 발휘할 수 있는 희망 기업 리스트업 및 분석',
           content: [
-            '배운 점: 비밀번호 해시 저장 방식의 한계(유출 시 무차별 대입 및 피싱 취약)를 체감하고, 공개키 암호학 기반 인증의 우수성을 실감함.',
-            '설계적 판단: 단순 UI 숨김(display: none)은 보안이 아니며, 서버 레벨에서 401/403 차단 및 정적 리소스 내 평문 제거가 필수임을 확인.',
-            '향후 과제: 다중 디바이스 패스키 등록 및 분실 대비 백업키 복구 시나리오(Card 4) 구현 고도화'
+            '희망 직무: 백엔드/인프라 보안 개발자, 대용량 트래픽 처리 및 인증/인가 플랫폼 엔지니어',
+            '기업 탐색 기준: 기술 주도적 개발 문화, 코드 리뷰 및 CI/CD 환경 활성화, 제로 트러스트 보안 인프라 구축 기업',
+            '준비 계획: 기술 블로그 정리, 깃허브 오픈소스 기여, 포트폴리오 맞춤형 기술 인터뷰 대비 스터디 진행'
           ]
         }
       ]
